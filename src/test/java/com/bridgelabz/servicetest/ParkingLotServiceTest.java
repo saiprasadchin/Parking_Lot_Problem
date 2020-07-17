@@ -28,6 +28,20 @@ public class ParkingLotServiceTest {
     }
 
     @Test
+    public void givenAVehicle_WhenAlreadyParked_ShouldReturnFalse() {
+        Vehicle vehicle = new Vehicle("Car","Sai","MH0404");
+        boolean isParked = false;
+        try {
+            isParked = parkingLotService.parkVehicle(vehicle);
+            isParked = parkingLotService.parkVehicle(vehicle);
+        } catch (ParkingLotServiceException e) {
+            e.printStackTrace();
+        }
+        Assert.assertFalse(isParked);
+    }
+
+
+    @Test
     public void givenAVehicle_WhenUnParked_ShouldReturnTrue() {
         Vehicle vehicle = new Vehicle("Car","Sai","MH0404");
 
