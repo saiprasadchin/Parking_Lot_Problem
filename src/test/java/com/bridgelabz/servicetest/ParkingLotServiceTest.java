@@ -66,6 +66,18 @@ public class ParkingLotServiceTest {
     }
 
     @Test
+    public void givenVehicles_WhenParkingLotIsFull_ShouldInformSecurity() {
+        parkingLotService.parkingCapacity = 1;
+        Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
+        try {
+            parkingLotService.parkVehicle(vehicle);
+            Assert.assertTrue(parkingLotService.airportSecurityService.isFull());
+        } catch (ParkingLotServiceException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void givenNotParkedVehicle_WhenUnParked_ShouldThrowException() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
         boolean isUnParked = false;
