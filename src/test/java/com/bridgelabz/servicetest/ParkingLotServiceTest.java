@@ -55,6 +55,18 @@ public class ParkingLotServiceTest {
     }
 
     @Test
+    public void givenVehicles_WhenParkingLotIsFull_ShouldInformSecurity() {
+        parkingLotService.parkingCapacity = 1;
+        Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
+        try {
+            parkingLotService.parkVehicle(vehicle);
+            Assert.assertTrue(parkingLotService.airportSecurityService.isFull());
+        } catch (ParkingLotServiceException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void givenAVehicles_WhenParkingLotIsFull_ShouldThrowException() {
         parkingLotService.parkingCapacity = 1;
         Vehicle vehicle = new Vehicle("Car","Sai","MH0404");
