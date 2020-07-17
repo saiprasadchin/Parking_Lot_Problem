@@ -47,11 +47,26 @@ public class ParkingLotServiceTest {
 
         boolean isUnParked = false;
         try {
+            parkingLotService.parkVehicle(vehicle);
             isUnParked = parkingLotService.unParkVehicle(vehicle);
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
         }
         Assert.assertTrue(isUnParked);
+    }
+
+    @Test
+    public void givenCapacity_WhenAvailableShould_InformToOWner() {
+        Vehicle vehicle = new Vehicle("Car","Sai","MH0404");
+
+        boolean isUnParked = false;
+        try {
+            parkingLotService.parkVehicle(vehicle);
+            isUnParked = parkingLotService.unParkVehicle(vehicle);
+        } catch (ParkingLotServiceException e) {
+            e.printStackTrace();
+        }
+        Assert.assertFalse(parkingLotService.isCapicityFull);
     }
 
     @Test

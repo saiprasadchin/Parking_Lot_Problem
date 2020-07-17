@@ -34,6 +34,12 @@ public class ParkingLotService {
     public boolean unParkVehicle(Vehicle vehicle)throws ParkingLotServiceException {
         if(vehicle == null)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
+
+        if(!parkedVehicles.contains(vehicle))
+            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
+
+        parkedVehicles.remove(vehicle);
+        isCapicityFull = false;
         return true;
     }
 }
