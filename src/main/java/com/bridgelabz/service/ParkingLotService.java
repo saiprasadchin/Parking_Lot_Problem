@@ -1,5 +1,6 @@
 package com.bridgelabz.service;
 
+import com.bridgelabz.exception.ParkingLotServiceException;
 import com.bridgelabz.model.Vehicle;
 
 import java.util.ArrayList;
@@ -11,11 +12,11 @@ public class ParkingLotService {
     public boolean isCapicityFull = false;
     public List<Vehicle> parkedVehicles = new ArrayList<Vehicle>();
 
-    public boolean parkVehicle(Vehicle vehicle) {
+    public boolean parkVehicle(Vehicle vehicle)throws ParkingLotServiceException {
         if(vehicle == null)
-            return false;
+            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
         if(isCapicityFull){
-           return false;
+            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.PARKING_LOT_IS_FULL, "Parking Full");
         }
         if(parkedVehicles.contains(vehicle)){
             return false;
@@ -26,9 +27,10 @@ public class ParkingLotService {
         return true;
     }
 
-    public boolean unParkVehicle(Vehicle vehicle) {
+    public boolean unParkVehicle(Vehicle vehicle)throws ParkingLotServiceException {
         if(vehicle == null)
-            return false;
+            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
+
         return true;
     }
 }
