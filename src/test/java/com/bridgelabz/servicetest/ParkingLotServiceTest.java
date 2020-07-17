@@ -38,7 +38,6 @@ public class ParkingLotServiceTest {
             Assert.assertEquals(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, e.exceptionType);
         }
     }
-
     //Test For Check If Already vehicle is parked
     @Test
     public void givenAVehicle_WhenAlreadyParked_ShouldReturnFalse() {
@@ -52,7 +51,6 @@ public class ParkingLotServiceTest {
         }
         Assert.assertFalse(isParked);
     }
-
     //Test For UnPark The Vehicle
     @Test
     public void givenAVehicle_WhenUnParked_ShouldReturnTrue() {
@@ -66,7 +64,6 @@ public class ParkingLotServiceTest {
         }
         Assert.assertTrue(isUnParked);
     }
-
 
     @Test
     public void givenNotParkedVehicle_WhenUnParked_ShouldThrowException() {
@@ -104,7 +101,6 @@ public class ParkingLotServiceTest {
     @Test
     public void givenCapacity_WhenAvailableShould_InformToOWner() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
-
         boolean isUnParked = false;
         try {
             parkingLotService.parkVehicle(vehicle);
