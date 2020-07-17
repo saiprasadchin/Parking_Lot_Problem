@@ -9,4 +9,10 @@ public class ParkingLotService {
             return false;
         return true;
     }
+
+    public boolean unParkVehicle(Vehicle vehicle) {
+        if(vehicle == null)
+            return false;
+        return true;
+    }
 }
