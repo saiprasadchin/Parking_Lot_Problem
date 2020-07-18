@@ -15,7 +15,7 @@ public class ParkingLotServiceTest {
     public void init() {
         parkingLotService = new ParkingLotService();
     }
-    //Test For Park The Vehicle
+
     @Test
     public void givenAVehicle_WhenParked_ShouldReturnTrue() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
@@ -38,7 +38,7 @@ public class ParkingLotServiceTest {
             Assert.assertEquals(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, e.exceptionType);
         }
     }
-    //Test For Check If Already vehicle is parked
+
     @Test
     public void givenAVehicle_WhenAlreadyParked_ShouldReturnFalse() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
@@ -51,7 +51,7 @@ public class ParkingLotServiceTest {
         }
         Assert.assertFalse(isParked);
     }
-    //Test For UnPark The Vehicle
+
     @Test
     public void givenAVehicle_WhenUnParked_ShouldReturnTrue() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
@@ -77,7 +77,6 @@ public class ParkingLotServiceTest {
         }
     }
 
-    //Test To Handle Null Type Exception
     @Test
     public void givenANullVehicle_WhenUnParked_ShouldThrowException() {
         Vehicle vehicle = null;
@@ -88,7 +87,7 @@ public class ParkingLotServiceTest {
             Assert.assertEquals(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, e.exceptionType);
         }
     }
-    //Test Case In Parking Lot Is Full
+
     @Test
     public void givenVehicles_WhenParkingLotIsFull_ShouldThrowException() {
         parkingLotService.parkingCapacity = 1;
