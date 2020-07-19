@@ -2,6 +2,8 @@ package com.bridgelabz.servicetest;
 
 import com.bridgelabz.exception.ParkingLotServiceException;
 import com.bridgelabz.model.Vehicle;
+import com.bridgelabz.service.AirportSecurityService;
+import com.bridgelabz.service.Owner;
 import com.bridgelabz.service.ParkingLotService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,7 +17,7 @@ public class ParkingLotServiceTest {
     public void init() {
         parkingLotService = new ParkingLotService();
     }
-    //Test For Park The Vehicle
+
     @Test
     public void givenAVehicle_WhenParked_ShouldReturnTrue() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
@@ -38,7 +40,7 @@ public class ParkingLotServiceTest {
             Assert.assertEquals(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, e.exceptionType);
         }
     }
-    //Test For Check If Already vehicle is parked
+
     @Test
     public void givenAVehicle_WhenAlreadyParked_ShouldReturnFalse() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
@@ -51,7 +53,7 @@ public class ParkingLotServiceTest {
         }
         Assert.assertFalse(isParked);
     }
-    //Test For UnPark The Vehicle
+
     @Test
     public void givenAVehicle_WhenUnParked_ShouldReturnTrue() {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
@@ -71,7 +73,8 @@ public class ParkingLotServiceTest {
         Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
         try {
             parkingLotService.parkVehicle(vehicle);
-            Assert.assertTrue(parkingLotService.airportSecurityService.isFull());
+            AirportSecurityService security = (AirportSecurityService)parkingLotService.parkingLotListeners.get(ParkingLotService.SECURITY);
+            Assert.assertEquals("Capacity is Full",security.getParkingLotStatus());
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
         }
@@ -87,7 +90,7 @@ public class ParkingLotServiceTest {
             Assert.assertEquals(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, e.exceptionType);
         }
     }
-    //Test To Handle Null Type Exception
+
     @Test
     public void givenANullVehicle_WhenUnParked_ShouldThrowException() {
         Vehicle vehicle = null;
@@ -98,7 +101,7 @@ public class ParkingLotServiceTest {
             Assert.assertEquals(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, e.exceptionType);
         }
     }
-    //Test Case In Parking Lot Is Full
+
     @Test
     public void givenVehicles_WhenParkingLotIsFull_ShouldThrowException() {
         parkingLotService.parkingCapacity = 1;
@@ -112,14 +115,14 @@ public class ParkingLotServiceTest {
 
     @Test
     public void givenCapacity_WhenAvailableShould_InformToOWner() {
-        Vehicle vehicle = new Vehicle("Car", "Sai", "MH0404");
-        boolean isUnParked = false;
+        Vehicle vehicle = new Vehicle("Car", "Saiprasad", "MH0405");
         try {
             parkingLotService.parkVehicle(vehicle);
-            isUnParked = parkingLotService.unParkVehicle(vehicle);
+            parkingLotService.unParkVehicle(vehicle);
+            Owner owner = (Owner) parkingLotService.parkingLotListeners.get(ParkingLotService.OWNER);
+            Assert.assertEquals("Capacity Available",owner.getParkingLotStatus());
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
         }
-        Assert.assertFalse(parkingLotService.isCapicityFull);
     }
 }
