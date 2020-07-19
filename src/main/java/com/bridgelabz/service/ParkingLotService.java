@@ -12,47 +12,49 @@ public class ParkingLotService {
 
     public int parkingCapacity = 100;
     public List<Vehicle> parkedVehicles = new ArrayList<Vehicle>();
-    public Map<String,IParkingLotListener> parkingLotListeners = new HashMap<String,IParkingLotListener>();
+    public Map<String, IParkingLotListener> parkingLotListeners = new HashMap<String, IParkingLotListener>();
     public final static String OWNER = "OWNER";
     public final static String SECURITY = "SECURITY";
 
     public ParkingLotService() {
-        parkingLotListeners.put(OWNER,new Owner());
-        parkingLotListeners.put(SECURITY,new AirportSecurityService());
+        parkingLotListeners.put(OWNER, new Owner());
+        parkingLotListeners.put(SECURITY, new AirportSecurityService());
     }
 
-    public void registerListeners(String capacityStatus){
+    public void registerListeners(String capacityStatus) {
         parkingLotListeners.get(OWNER).inform(capacityStatus);
         parkingLotListeners.get(SECURITY).inform(capacityStatus);
 
     }
 
-    public boolean parkVehicle(Vehicle vehicle)throws ParkingLotServiceException {
-        if(vehicle == null) {
+    public void parkVehicle(Vehicle vehicle) throws ParkingLotServiceException {
+        if (vehicle == null)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
-        }
-        if(parkedVehicles.size() == parkingCapacity){
+
+        if (parkedVehicles.size() == parkingCapacity)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.PARKING_LOT_IS_FULL, "Parking Full");
-        }
-        if(parkedVehicles.contains(vehicle)){
-            return false;
-        }
+
+        if (parkedVehicles.contains(vehicle))
+            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
+
         parkedVehicles.add(vehicle);
-        if(parkedVehicles.size() == parkingCapacity){
+        if (parkedVehicles.size() == parkingCapacity)
             registerListeners("Capacity is Full");
-        }
-        return true;
+
     }
 
-    public boolean unParkVehicle(Vehicle vehicle)throws ParkingLotServiceException {
-        if(vehicle == null) {
+    public void unParkVehicle(Vehicle vehicle) throws ParkingLotServiceException {
+        if (vehicle == null)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
-        }
-        if(!parkedVehicles.contains(vehicle)) {
+
+        if (!parkedVehicles.contains(vehicle))
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
-        }
+
         parkedVehicles.remove(vehicle);
         registerListeners("Capacity Available");
-        return true;
+    }
+
+    public boolean isPresent(Vehicle vehicle) {
+        return parkedVehicles.contains(vehicle);
     }
 }
