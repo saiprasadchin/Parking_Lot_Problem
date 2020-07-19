@@ -1,6 +1,6 @@
 package com.bridgelabz.service;
 
-public class AirportSecurityService implements IParkingLotListener {
+public class Owner implements IParkingLotListener {
 
     private String parkingLotStatus;
 
