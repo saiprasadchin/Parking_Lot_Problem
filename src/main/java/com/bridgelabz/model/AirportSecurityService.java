@@ -1,4 +1,4 @@
-package com.bridgelabz.service;
+package com.bridgelabz.model;
 
 public class AirportSecurityService implements IParkingLotListener {
 

@@ -1,4 +1,6 @@
-package com.bridgelabz.service;
+package com.bridgelabz.model;
+
+import com.bridgelabz.model.IParkingLotListener;
 
 public class Owner implements IParkingLotListener {
 
