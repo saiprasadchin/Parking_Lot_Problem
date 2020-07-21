@@ -1,17 +1,18 @@
-package com.bridgelabz.model;
+package com.bridgelabz.observer;
 
-import com.bridgelabz.model.IParkingLotListener;
 
-public class Owner implements IParkingLotListener {
+public class Owner implements IObserver {
 
     private String parkingLotStatus;
 
+    @Override
     public String getParkingLotStatus() {
         return parkingLotStatus;
+
     }
 
     @Override
-    public void inform(String parkingLotStatus) {
+    public void update(String parkingLotStatus) {
         this.parkingLotStatus = parkingLotStatus;
     }
 }
