@@ -2,8 +2,8 @@ package com.bridgelabz.servicetest;
 
 import com.bridgelabz.exception.ParkingLotServiceException;
 import com.bridgelabz.model.Vehicle;
-import com.bridgelabz.service.AirportSecurityService;
-import com.bridgelabz.service.Owner;
+import com.bridgelabz.observer.AirportSecurityService;
+import com.bridgelabz.observer.Owner;
 import com.bridgelabz.service.ParkingLotService;
 import org.junit.Assert;
 import org.junit.Before;

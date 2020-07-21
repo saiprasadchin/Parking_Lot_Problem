@@ -2,6 +2,9 @@ package com.bridgelabz.service;
 
 import com.bridgelabz.exception.ParkingLotServiceException;
 import com.bridgelabz.model.Vehicle;
+import com.bridgelabz.observer.AirportSecurityService;
+import com.bridgelabz.observer.IObserver;
+import com.bridgelabz.observer.Owner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +15,7 @@ public class ParkingLotService {
 
     public int parkingCapacity = 100;
     public List<Vehicle> parkedVehicles = new ArrayList<Vehicle>();
-    public Map<String, IParkingLotListener> parkingLotListeners = new HashMap<String, IParkingLotListener>();
+    public Map<String, IObserver> parkingLotListeners = new HashMap<String, IObserver>();
     public final static String OWNER = "OWNER";
     public final static String SECURITY = "SECURITY";
 
@@ -22,8 +25,8 @@ public class ParkingLotService {
     }
 
     public void registerListeners(String capacityStatus) {
-        parkingLotListeners.get(OWNER).inform(capacityStatus);
-        parkingLotListeners.get(SECURITY).inform(capacityStatus);
+        parkingLotListeners.get(OWNER).update(capacityStatus);
+        parkingLotListeners.get(SECURITY).update(capacityStatus);
 
     }
 
