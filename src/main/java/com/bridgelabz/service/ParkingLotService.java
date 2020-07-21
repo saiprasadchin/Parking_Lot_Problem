@@ -6,22 +6,22 @@ import com.bridgelabz.observer.AirportSecurityService;
 import com.bridgelabz.observer.IObserver;
 import com.bridgelabz.observer.Owner;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ParkingLotService {
 
     public int parkingCapacity = 100;
-    public List<Vehicle> parkedVehicles = new ArrayList<Vehicle>();
-    public Map<String, IObserver> parkingLotListeners = new HashMap<String, IObserver>();
+    private HashMap<Integer, Vehicle> parkedVehicles = new HashMap<>();
+    public Map<String, IObserver> parkingLotListeners = new HashMap<>();
+    public Attendant Attendant;
     public final static String OWNER = "OWNER";
     public final static String SECURITY = "SECURITY";
 
     public ParkingLotService() {
         parkingLotListeners.put(OWNER, new Owner());
         parkingLotListeners.put(SECURITY, new AirportSecurityService());
+        Attendant = new Attendant();
     }
 
     public void registerListeners(String capacityStatus) {
@@ -30,34 +30,40 @@ public class ParkingLotService {
 
     }
 
-    public void parkVehicle(Vehicle vehicle) throws ParkingLotServiceException {
+    public void parkVehicle(int slot, Vehicle vehicle) throws ParkingLotServiceException {
         if (vehicle == null)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
         if (parkedVehicles.size() == parkingCapacity)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.PARKING_LOT_IS_FULL, "Parking Full");
 
-        if (parkedVehicles.contains(vehicle))
+        if (parkedVehicles.containsValue(vehicle))
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
 
-        parkedVehicles.add(vehicle);
+        parkedVehicles = Attendant.attendantParkedVehicle(slot, vehicle, parkedVehicles);
         if (parkedVehicles.size() == parkingCapacity)
             registerListeners("Capacity is Full");
 
     }
 
     public void unParkVehicle(Vehicle vehicle) throws ParkingLotServiceException {
+        int spot = 0;
         if (vehicle == null)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
-        if (!parkedVehicles.contains(vehicle))
+        if (!parkedVehicles.containsValue(vehicle))
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
 
-        parkedVehicles.remove(vehicle);
+        for (Map.Entry<Integer, Vehicle> entry : parkedVehicles.entrySet()) {
+            if (entry.getValue().equals(vehicle)) {
+                spot = entry.getKey();
+            }
+        }
+        parkedVehicles.put(spot, null);
         registerListeners("Capacity Available");
     }
 
     public boolean isPresent(Vehicle vehicle) {
-        return parkedVehicles.contains(vehicle);
+        return parkedVehicles.containsValue(vehicle);
     }
 }

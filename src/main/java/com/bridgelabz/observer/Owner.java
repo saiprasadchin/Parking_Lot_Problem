@@ -1,6 +1,5 @@
 package com.bridgelabz.observer;
 
-
 public class Owner implements IObserver {
 
     private String parkingLotStatus;
@@ -15,4 +14,5 @@ public class Owner implements IObserver {
     public void update(String parkingLotStatus) {
         this.parkingLotStatus = parkingLotStatus;
     }
+
 }
