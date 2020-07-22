@@ -42,6 +42,17 @@ public class ParkingLotServiceTest {
     }
 
     @Test
+    public void givenParkingLot_WhenVehicleNotFound_ShouldThrowException() {
+        Vehicle vehicle = new Vehicle();
+        try {
+            parkingLotService.unParkVehicle(vehicle);
+            parkingLotService.findVehicle(vehicle);
+        } catch (ParkingLotServiceException e) {
+            Assert.assertEquals(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, e.exceptionType);
+        }
+    }
+
+    @Test
     public void givenAVehicle_WhenAlreadyParked_ShouldThrowException() {
         parkingLotService.parkingCapacity = 3;
         Vehicle vehicle = new Vehicle();
@@ -55,6 +66,7 @@ public class ParkingLotServiceTest {
 
     @Test
     public void givenAVehicle_WhenUnParked_ShouldReturnTrue() {
+        parkingLotService.parkingCapacity = 5;
         Vehicle vehicle = new Vehicle();
         boolean isUnParked;
         try {
