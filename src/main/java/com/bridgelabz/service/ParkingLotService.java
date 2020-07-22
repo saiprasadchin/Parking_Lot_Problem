@@ -1,11 +1,13 @@
 package com.bridgelabz.service;
 
 import com.bridgelabz.exception.ParkingLotServiceException;
+import com.bridgelabz.model.SlotDetails;
 import com.bridgelabz.model.Vehicle;
 import com.bridgelabz.observer.AirportSecurityService;
 import com.bridgelabz.observer.IObserver;
 import com.bridgelabz.observer.Owner;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -13,15 +15,17 @@ import java.util.stream.IntStream;
 public class ParkingLotService {
 
     public int parkingCapacity;
-    private HashMap<Integer, Vehicle> parkedVehicles = new HashMap<>();
+    public int currentParkedStatus = 0;
+    public HashMap<Integer, SlotDetails> parkedVehicles;
     public Map<String, IObserver> parkingLotListeners = new HashMap<>();
     public final static String OWNER = "OWNER";
     public final static String SECURITY = "SECURITY";
 
-    public ParkingLotService() {
-        //this.parkingCapacity = parkingCapacity;
+    public ParkingLotService(int parkingCapacity) {
+        this.parkingCapacity = parkingCapacity;
         parkingLotListeners.put(OWNER, new Owner());
         parkingLotListeners.put(SECURITY, new AirportSecurityService());
+        this.parkedVehicles = new HashMap<>(100);
         this.initializeParkingLot();
     }
 
@@ -30,7 +34,7 @@ public class ParkingLotService {
     }
 
     public boolean isPresent(Vehicle vehicle) {
-        return parkedVehicles.containsValue(vehicle);
+        return parkedVehicles.containsValue(new SlotDetails(vehicle, null));
     }
 
     public void registerListeners(String capacityStatus) {
@@ -43,14 +47,16 @@ public class ParkingLotService {
         if (vehicle == null)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
-        if (parkedVehicles.size() == parkingCapacity)
+        if (currentParkedStatus == parkingCapacity)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.PARKING_LOT_IS_FULL, "Parking Full");
 
-        if (parkedVehicles.containsValue(vehicle))
+        if (isPresent(vehicle))
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
 
-        parkedVehicles.put(getAvailableSlot(), vehicle);
-        if (parkedVehicles.size() == parkingCapacity)
+
+        parkedVehicles.put(getAvailableSlot(), new SlotDetails(vehicle, LocalTime.now().withNano(0)));
+        currentParkedStatus++;
+        if (currentParkedStatus == parkingCapacity)
             registerListeners("Capacity is Full");
 
     }
@@ -60,14 +66,16 @@ public class ParkingLotService {
         if (vehicle == null)
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
-        if (!parkedVehicles.containsValue(vehicle))
+        if (!isPresent(vehicle))
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
 
-        for (Map.Entry<Integer, Vehicle> entry : parkedVehicles.entrySet()) {
-            if (entry.getValue().equals(vehicle))
+        for (Map.Entry<Integer, SlotDetails> entry : parkedVehicles.entrySet()) {
+            if (vehicle.equals(entry.getValue())) {
                 spot = entry.getKey();
+            }
         }
         parkedVehicles.put(spot, null);
+        currentParkedStatus--;
         registerListeners("Capacity Available");
     }
 
@@ -80,17 +88,21 @@ public class ParkingLotService {
     }
 
     public void parkVehicle(int slot, Vehicle vehicle) throws ParkingLotServiceException {
-        if (parkedVehicles.containsValue(vehicle))
+        if (isPresent(vehicle))
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
-        parkedVehicles.put(slot, vehicle);
+        this.parkedVehicles.put(slot, new SlotDetails(vehicle, LocalTime.now().withNano(0)));
     }
 
-    public int findVehicle(Object vehicle) throws ParkingLotServiceException {
-        if (parkedVehicles.containsValue(vehicle)) {
-            int spot = parkedVehicles.keySet()
-                    .stream()
-                    .filter(key -> vehicle.equals(parkedVehicles.get(key)))
-                    .findFirst().get();
+    public int findVehicle(Vehicle vehicle) throws ParkingLotServiceException {
+        if (isPresent(vehicle)) {
+            int spot = 0;
+            for (Integer slots : this.parkedVehicles.keySet()) {
+                if (this.parkedVehicles.get(slots) != null) {
+                    if (vehicle.equals(this.parkedVehicles.get(slots).getVehicle())) {
+                        spot = slots;
+                    }
+                }
+            }
             return spot;
         }
         throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");

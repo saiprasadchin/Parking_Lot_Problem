@@ -1,6 +1,7 @@
 package com.bridgelabz.servicetest;
 
 import com.bridgelabz.exception.ParkingLotServiceException;
+import com.bridgelabz.model.SlotDetails;
 import com.bridgelabz.model.Vehicle;
 import com.bridgelabz.observer.AirportSecurityService;
 import com.bridgelabz.observer.Owner;
@@ -9,17 +10,21 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 public class ParkingLotServiceTest {
 
     ParkingLotService parkingLotService = null;
 
     @Before
     public void init() {
-        parkingLotService = new ParkingLotService();
+        parkingLotService = new ParkingLotService(100);
     }
 
     @Test
     public void givenAVehicle_WhenParked_ShouldReturnTrue() {
+        parkingLotService.parkingCapacity = 2;
         Vehicle vehicle = new Vehicle();
         boolean isParked;
         try {
@@ -126,6 +131,7 @@ public class ParkingLotServiceTest {
 
     @Test
     public void givenCapacity_WhenAvailableShould_InformToOwner() {
+        parkingLotService.parkingCapacity = 3;
         Vehicle vehicle = new Vehicle();
         try {
             parkingLotService.parkVehicle(vehicle);
@@ -156,6 +162,20 @@ public class ParkingLotServiceTest {
             parkingLotService.parkVehicle(4, vehicle);
             int slotNumber = parkingLotService.findVehicle(vehicle);
             Assert.assertEquals(4, slotNumber);
+        } catch (ParkingLotServiceException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void givenVehicle_WhenTimeAllotted_ShouldReturnParkingTime() {
+        Vehicle vehicle = new Vehicle();
+        try {
+            LocalTime testTime = LocalTime.now().withNano(0);
+            parkingLotService.parkVehicle(vehicle);
+            int slotNumber = parkingLotService.findVehicle(vehicle);
+            SlotDetails slotDetails = this.parkingLotService.parkedVehicles.get(slotNumber);
+            Assert.assertEquals(testTime, slotDetails.getParkingTime());
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
         }
