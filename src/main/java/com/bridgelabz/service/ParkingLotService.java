@@ -84,4 +84,15 @@ public class ParkingLotService {
             throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
         parkedVehicles.put(slot, vehicle);
     }
+
+    public int findVehicle(Object vehicle) throws ParkingLotServiceException {
+        if (parkedVehicles.containsValue(vehicle)) {
+            int spot = parkedVehicles.keySet()
+                    .stream()
+                    .filter(key -> vehicle.equals(parkedVehicles.get(key)))
+                    .findFirst().get();
+            return spot;
+        }
+        throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
+    }
 }

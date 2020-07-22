@@ -136,4 +136,16 @@ public class ParkingLotServiceTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void givenParkingLot_WhenVehicleFound_ShouldReturnVehicleSlot() {
+        Vehicle vehicle = new Vehicle();
+        try {
+            parkingLotService.parkVehicle(4, vehicle);
+            int slotNumber = parkingLotService.findVehicle(vehicle);
+            Assert.assertEquals(4, slotNumber);
+        } catch (ParkingLotServiceException e) {
+            e.printStackTrace();
+        }
+    }
 }
