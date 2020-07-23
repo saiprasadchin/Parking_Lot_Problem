@@ -1,4 +1,4 @@
-package com.bridgelabz.observer;
+package com.bridgelabz.parkinglot.observer;
 
 public interface IObserver {
 

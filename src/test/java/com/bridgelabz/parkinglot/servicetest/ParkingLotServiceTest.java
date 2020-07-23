@@ -1,17 +1,15 @@
-package com.bridgelabz.servicetest;
+package com.bridgelabz.parkinglot.servicetest;
 
-import com.bridgelabz.exception.ParkingLotServiceException;
-import com.bridgelabz.model.SlotDetails;
-import com.bridgelabz.model.Vehicle;
-import com.bridgelabz.observer.AirportSecurityService;
-import com.bridgelabz.observer.Owner;
-import com.bridgelabz.service.ParkingLotService;
+import com.bridgelabz.parkinglot.exception.ParkingLotServiceException;
+import com.bridgelabz.parkinglot.observer.Owner;
+import com.bridgelabz.parkinglot.model.Vehicle;
+import com.bridgelabz.parkinglot.observer.AirportSecurityService;
+import com.bridgelabz.parkinglot.service.ParkingLotService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class ParkingLotServiceTest {
 
@@ -19,12 +17,12 @@ public class ParkingLotServiceTest {
 
     @Before
     public void init() {
-        parkingLotService = new ParkingLotService(100);
+        parkingLotService = new ParkingLotService(2);
+
     }
 
     @Test
     public void givenAVehicle_WhenParked_ShouldReturnTrue() {
-        parkingLotService.parkingCapacity = 2;
         Vehicle vehicle = new Vehicle();
         boolean isParked;
         try {
@@ -51,7 +49,7 @@ public class ParkingLotServiceTest {
         Vehicle vehicle = new Vehicle();
         try {
             parkingLotService.unParkVehicle(vehicle);
-            parkingLotService.findVehicle(vehicle);
+            parkingLotService.getSlot(vehicle);
         } catch (ParkingLotServiceException e) {
             Assert.assertEquals(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, e.exceptionType);
         }
@@ -59,7 +57,6 @@ public class ParkingLotServiceTest {
 
     @Test
     public void givenAVehicle_WhenAlreadyParked_ShouldThrowException() {
-        parkingLotService.parkingCapacity = 3;
         Vehicle vehicle = new Vehicle();
         try {
             parkingLotService.parkVehicle(vehicle);
@@ -71,7 +68,6 @@ public class ParkingLotServiceTest {
 
     @Test
     public void givenAVehicle_WhenUnParked_ShouldReturnTrue() {
-        parkingLotService.parkingCapacity = 5;
         Vehicle vehicle = new Vehicle();
         boolean isUnParked;
         try {
@@ -87,12 +83,13 @@ public class ParkingLotServiceTest {
 
     @Test
     public void givenVehicles_WhenParkingLotIsFull_ShouldInformSecurity() {
-        parkingLotService.parkingCapacity = 1;
+        AirportSecurityService airportSecurityService = new AirportSecurityService();
+        parkingLotService.registerParkingLotObserver(airportSecurityService);
         Vehicle vehicle = new Vehicle();
         try {
             parkingLotService.parkVehicle(vehicle);
-            AirportSecurityService security = (AirportSecurityService) parkingLotService.parkingLotListeners.get(ParkingLotService.SECURITY);
-            Assert.assertEquals("Capacity is Full", security.getParkingLotStatus());
+            parkingLotService.parkVehicle(new Vehicle());
+            Assert.assertEquals("Capacity is Full", airportSecurityService.getParkingLotStatus());
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
         }
@@ -120,8 +117,8 @@ public class ParkingLotServiceTest {
 
     @Test
     public void givenVehicles_WhenParkingLotIsFull_ShouldThrowException() {
-        parkingLotService.parkingCapacity = 1;
         try {
+            parkingLotService.parkVehicle(new Vehicle());
             parkingLotService.parkVehicle(new Vehicle());
             parkingLotService.parkVehicle(new Vehicle());
         } catch (ParkingLotServiceException e) {
@@ -130,13 +127,13 @@ public class ParkingLotServiceTest {
     }
 
     @Test
-    public void givenCapacity_WhenAvailableShould_InformToOwner() {
-        parkingLotService.parkingCapacity = 3;
-        Vehicle vehicle = new Vehicle();
+    public void givenParkingLotVacancy_WhenFull_ShouldInformTheOwner() {
+        Owner owner = new Owner();
+        parkingLotService.registerParkingLotObserver(owner);
         try {
+            Vehicle vehicle = new Vehicle();
             parkingLotService.parkVehicle(vehicle);
             parkingLotService.unParkVehicle(vehicle);
-            Owner owner = (Owner) parkingLotService.parkingLotListeners.get(ParkingLotService.OWNER);
             Assert.assertEquals("Capacity Available", owner.getParkingLotStatus());
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
@@ -160,22 +157,21 @@ public class ParkingLotServiceTest {
         Vehicle vehicle = new Vehicle();
         try {
             parkingLotService.parkVehicle(4, vehicle);
-            int slotNumber = parkingLotService.findVehicle(vehicle);
-            Assert.assertEquals(4, slotNumber);
+            Integer slotNumber = parkingLotService.findVehicle(vehicle);
+            Assert.assertEquals((Integer) 4, slotNumber);
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void givenVehicle_WhenTimeAllotted_ShouldReturnParkingTime() {
+    public void givenVehicle_WhenParked_ShouldReturnParkingTime() {
         Vehicle vehicle = new Vehicle();
         try {
-            LocalTime testTime = LocalTime.now().withNano(0);
+            LocalDateTime localDateTime = LocalDateTime.now().withNano(0);
             parkingLotService.parkVehicle(vehicle);
-            int slotNumber = parkingLotService.findVehicle(vehicle);
-            SlotDetails slotDetails = this.parkingLotService.parkedVehicles.get(slotNumber);
-            Assert.assertEquals(testTime, slotDetails.getParkingTime());
+            LocalDateTime localDateTime1 = parkingLotService.getParkingTime(vehicle);
+            Assert.assertEquals(localDateTime, localDateTime1);
         } catch (ParkingLotServiceException e) {
             e.printStackTrace();
         }
