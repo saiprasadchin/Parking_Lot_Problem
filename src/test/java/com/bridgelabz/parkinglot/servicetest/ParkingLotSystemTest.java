@@ -60,4 +60,14 @@ public class ParkingLotSystemTest {
         }
     }
 
+    @Test
+    public void givenARequestToUnParkAVehicle_ShouldGetUnParked() {
+        try {
+            parkingLotSystem.park(firstVehicle);
+            parkingLotSystem.unPark(firstVehicle);
+            ParkingLot parkingLot = parkingLotSystem.getParkingLotInWhichVehicleIsParked(firstVehicle);
+        } catch (ParkingLotException e) {
+            Assert.assertEquals(ParkingLotException.ExceptionType.NO_SUCH_A_VEHICLE, e.exceptionType);
+        }
+    }
 }
