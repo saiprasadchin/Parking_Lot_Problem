@@ -26,7 +26,7 @@ public class ParkingLotSystemTest {
     }
 
     @Test
-    public void givenParkingLotsAreEmpty_FirstVehicleShouldGetParkedInFirstParkingLot() {
+    public void givenVehicle_whenParkingLotsAreEmpty_ShouldParkedInFirstParkingLot() {
         ParkingLot expectedResult = firstLot;
         try {
             parkingLotSystem.park(firstVehicle);
@@ -38,7 +38,7 @@ public class ParkingLotSystemTest {
     }
 
     @Test
-    public void givenParkingLots_secondVehicleShouldGetParkedInSecondParkingLot() {
+    public void givenSecondVehicle_ShouldGetParkedInSecondParkingLot() {
         ParkingLot expectedResult = secondLot;
         try {
             parkingLotSystem.park(firstVehicle);
@@ -47,27 +47,6 @@ public class ParkingLotSystemTest {
             Assert.assertEquals(expectedResult,actualResult);
         } catch (ParkingLotException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void givenVehicle_isAlreadyPresentInAnyParkingLot_ShouldThrowException() {
-        try {
-            parkingLotSystem.park(firstVehicle);
-            parkingLotSystem.park(firstVehicle);
-        } catch (ParkingLotException e) {
-            Assert.assertEquals(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, e.exceptionType);
-        }
-    }
-
-    @Test
-    public void givenARequestToUnParkAVehicle_ShouldGetUnParked() {
-        try {
-            parkingLotSystem.park(firstVehicle);
-            parkingLotSystem.unPark(firstVehicle);
-            ParkingLot parkingLot = parkingLotSystem.getParkingLotInWhichVehicleIsParked(firstVehicle);
-        } catch (ParkingLotException e) {
-            Assert.assertEquals(ParkingLotException.ExceptionType.NO_SUCH_A_VEHICLE, e.exceptionType);
         }
     }
 }
