@@ -49,4 +49,15 @@ public class ParkingLotSystemTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void givenVehicle_isAlreadyPresentInAnyParkingLot_ShouldThrowException() {
+        try {
+            parkingLotSystem.park(firstVehicle);
+            parkingLotSystem.park(firstVehicle);
+        } catch (ParkingLotException e) {
+            Assert.assertEquals(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, e.exceptionType);
+        }
+    }
+
 }
