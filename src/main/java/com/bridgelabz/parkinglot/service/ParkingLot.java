@@ -1,6 +1,6 @@
 package com.bridgelabz.parkinglot.service;
 
-import com.bridgelabz.parkinglot.exception.ParkingLotServiceException;
+import com.bridgelabz.parkinglot.exception.ParkingLotException;
 import com.bridgelabz.parkinglot.observer.IObserver;
 import com.bridgelabz.parkinglot.model.Vehicle;
 import com.bridgelabz.parkinglot.utility.Slot;
@@ -9,18 +9,22 @@ import com.bridgelabz.parkinglot.utility.SlotAllotment;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class ParkingLotService {
+public class ParkingLot {
 
     public int parkingCapacity;
     public SlotAllotment slotAllotment;
     public HashMap<Integer, Slot> parkedVehicles;
     public List<IObserver> observers;
 
-    public ParkingLotService(int parkingLotCapacity) {
+    public ParkingLot(int parkingLotCapacity) {
         this.parkingCapacity = parkingLotCapacity;
         this.observers = new ArrayList<>();
         this.parkedVehicles = new HashMap<>();
         this.slotAllotment = new SlotAllotment(parkingLotCapacity);
+    }
+
+    public int getCountOfVehicles() {
+        return parkedVehicles.size();
     }
 
     public void registerParkingLotObserver(IObserver observer) {
@@ -37,12 +41,12 @@ public class ParkingLotService {
         return (parkedVehicles.containsValue(new Slot(vehicle, LocalDateTime.now().withNano(0))));
     }
 
-    public void parkVehicle(Vehicle vehicle) throws ParkingLotServiceException {
+    public void parkVehicle(Vehicle vehicle) throws ParkingLotException {
         if (vehicle == null)
-            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
+            throw new ParkingLotException(ParkingLotException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
         if (isPresent(vehicle))
-            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
+            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
 
         parkedVehicles.put(slotAllotment.getNearestParkingSlot(), new Slot(vehicle, LocalDateTime.now().withNano(0)));
         if (this.parkingCapacity == this.parkedVehicles.size()) {
@@ -50,12 +54,12 @@ public class ParkingLotService {
         }
     }
 
-    public void unParkVehicle(Vehicle vehicle) throws ParkingLotServiceException {
+    public void unParkVehicle(Vehicle vehicle) throws ParkingLotException {
         if (vehicle == null)
-            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
+            throw new ParkingLotException(ParkingLotException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
         if (!isPresent(vehicle))
-            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
+            throw new ParkingLotException(ParkingLotException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
 
         parkedVehicles.remove(getSlot(vehicle));
         informListeners("Capacity Available");
@@ -85,9 +89,9 @@ public class ParkingLotService {
         return slot;
     }
 
-    public void parkVehicle(int slot, Vehicle vehicle) throws ParkingLotServiceException {
+    public void parkVehicle(int slot, Vehicle vehicle) throws ParkingLotException {
         if (isPresent(vehicle))
-            throw new ParkingLotServiceException(ParkingLotServiceException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
+            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
         this.parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0)));
         slotAllotment.parkUpdate(slot);
 
@@ -96,5 +100,11 @@ public class ParkingLotService {
     public LocalDateTime getParkingTime(Vehicle vehicle) {
         Slot slot = parkedVehicles.get(findVehicle(vehicle));
         return slot.getParkingTime();
+    }
+
+    public void isVehicleAlreadyPresent(Vehicle vehicle) throws ParkingLotException{
+        if(isPresent(vehicle)){
+            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
+        }
     }
 }
