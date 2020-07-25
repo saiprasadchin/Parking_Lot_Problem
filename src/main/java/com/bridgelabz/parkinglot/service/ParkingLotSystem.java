@@ -1,7 +1,9 @@
 package com.bridgelabz.parkinglot.service;
 
 import com.bridgelabz.parkinglot.exception.ParkingLotException;
-import com.bridgelabz.parkinglot.model.Vehicle;
+import com.bridgelabz.parkinglot.model.DriverType;
+import com.bridgelabz.parkinglot.model.ParkingVehicleDetails;
+import com.bridgelabz.parkinglot.model.VehicleSize;
 
 import java.util.*;
 
@@ -9,8 +11,6 @@ public class ParkingLotSystem {
 
 
     public List<ParkingLot> parkingLots;
-
-    private static final String  DRIVER_TYPE_HANDICAPPED = "DRIVER_TYPE_HANDICAPPED";
 
     public ParkingLotSystem(ParkingLot... parkingLot) {
         this.parkingLots = new ArrayList<>(Arrays.asList(parkingLot));
@@ -23,25 +23,30 @@ public class ParkingLotSystem {
         return this.parkingLots.size();
     }
 
-    public void park(Vehicle vehicle,String driverType) throws ParkingLotException {
-        for (ParkingLot parkingLot : this.parkingLots) {
-            parkingLot.isVehicleAlreadyPresent(vehicle);
+    public void park(ParkingVehicleDetails vehicle) throws ParkingLotException {
+        ParkingLot parkingLotAlLot = null;
+        List<ParkingLot> lots = this.parkingLots;
+        for (ParkingLot parkingLot : lots) {
+            parkingLot.checkVehicleAlreadyPresent(vehicle);
         }
-        List<ParkingLot> listOfLots = new ArrayList(this.parkingLots);
-        if(driverType.equals(DRIVER_TYPE_HANDICAPPED)){
-            getLotForHandicap().parkVehicle(vehicle);
-        }else {
-            listOfLots.sort(Comparator.comparing(ParkingLot::getCountOfVehicles));
-            listOfLots.get(0).parkVehicle(vehicle);
+        if(vehicle.getVehicleSize().equals(VehicleSize.LARGE)){
+            parkingLotAlLot = LotAllotmentService.getLotForLarge(this.parkingLots);
         }
+        if(vehicle.getDriverType().equals(DriverType.HANDICAPPED)){
+            parkingLotAlLot = LotAllotmentService.getLotForHandicapped(this.parkingLots);
+        }
+        if(vehicle.getDriverType().equals(DriverType.NORMAL)){
+            parkingLotAlLot = LotAllotmentService.getLotForNormal(this.parkingLots);
+        }
+        parkingLotAlLot.parkVehicle(vehicle);
     }
 
-    public void unPark(Vehicle vehicle) throws ParkingLotException {
+    public void unPark(ParkingVehicleDetails vehicle) throws ParkingLotException {
         ParkingLot parkingLot = this.getParkingLotInWhichVehicleIsParked(vehicle);
         parkingLot.unParkVehicle(vehicle);
     }
 
-    public ParkingLot getParkingLotInWhichVehicleIsParked(Vehicle vehicle) throws ParkingLotException {
+    public ParkingLot getParkingLotInWhichVehicleIsParked(ParkingVehicleDetails vehicle) throws ParkingLotException {
         for (ParkingLot parkingLot : this.parkingLots) {
             if (parkingLot.isPresent(vehicle)) {
                 return parkingLot;
@@ -50,15 +55,9 @@ public class ParkingLotSystem {
         throw new ParkingLotException(ParkingLotException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
     }
 
-    public Integer getParkingSlot(Vehicle vehicle) throws ParkingLotException {
+    public Integer getParkingSlot(ParkingVehicleDetails vehicle) throws ParkingLotException {
         ParkingLot parkingLot = this.getParkingLotInWhichVehicleIsParked(vehicle);
         return parkingLot.getPositionOfVehicle(vehicle);
     }
 
-    public ParkingLot getLotForHandicap() throws ParkingLotException {
-        return this.parkingLots.stream()
-                .filter(lot -> lot.getCountOfVehicles() != lot.getParkingCapacity())
-                .findFirst()
-                .orElseThrow(() -> new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_IS_FULL, "Parking Full"));
-    }
 }

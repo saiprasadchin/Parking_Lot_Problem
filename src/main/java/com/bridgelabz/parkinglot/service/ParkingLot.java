@@ -2,7 +2,7 @@ package com.bridgelabz.parkinglot.service;
 
 import com.bridgelabz.parkinglot.exception.ParkingLotException;
 import com.bridgelabz.parkinglot.observer.IObserver;
-import com.bridgelabz.parkinglot.model.Vehicle;
+import com.bridgelabz.parkinglot.model.ParkingVehicleDetails;
 import com.bridgelabz.parkinglot.model.Slot;
 import com.bridgelabz.parkinglot.utility.SlotAllotment;
 
@@ -43,11 +43,11 @@ public class ParkingLot {
     }
 
 
-    public boolean isPresent(Vehicle vehicle) {
-        return (parkedVehicles.containsValue(new Slot(vehicle, LocalDateTime.now().withNano(0))));
+    public boolean isPresent(ParkingVehicleDetails vehicle) {
+        return parkedVehicles.entrySet().stream().anyMatch(entry -> vehicle.equals(entry.getValue().getVehicle()));
     }
 
-    public void parkVehicle(Vehicle vehicle) throws ParkingLotException {
+    public void parkVehicle(ParkingVehicleDetails vehicle) throws ParkingLotException {
         if (vehicle == null)
             throw new ParkingLotException(ParkingLotException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
@@ -59,7 +59,7 @@ public class ParkingLot {
         }
     }
 
-    public void unParkVehicle(Vehicle vehicle) throws ParkingLotException {
+    public void unParkVehicle(ParkingVehicleDetails vehicle) throws ParkingLotException {
         if (vehicle == null)
             throw new ParkingLotException(ParkingLotException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
@@ -70,7 +70,7 @@ public class ParkingLot {
         informListeners("Capacity Available");
     }
 
-    public Integer getSlot(Vehicle vehicle) {
+    public Integer getSlot(ParkingVehicleDetails vehicle) {
         Integer slot = -1;
         for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
             if (vehicle.equals(entry.getValue().getVehicle())) {
@@ -81,7 +81,7 @@ public class ParkingLot {
         return slot;
     }
 
-    public Integer findVehicle(Vehicle vehicle) throws ParkingLotException {
+    public Integer findVehicle(ParkingVehicleDetails vehicle) throws ParkingLotException {
         Integer slot = -1;
         for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
             if (vehicle.equals(entry.getValue().getVehicle())) {
@@ -92,7 +92,7 @@ public class ParkingLot {
         return slot;
     }
 
-    public Integer getPositionOfVehicle(Vehicle vehicle) throws ParkingLotException {
+    public Integer getPositionOfVehicle(ParkingVehicleDetails vehicle) throws ParkingLotException {
         Integer slot = -1;
         for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
             if (vehicle.equals(entry.getValue().getVehicle())) {
@@ -102,19 +102,19 @@ public class ParkingLot {
         return slot;
     }
 
-    public void parkVehicle(int slot, Vehicle vehicle) throws ParkingLotException {
+    public void parkVehicle(int slot, ParkingVehicleDetails vehicle) throws ParkingLotException {
         if (isPresent(vehicle))
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
         this.parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0)));
         slotAllotment.parkUpdate(slot);
     }
 
-    public LocalDateTime getParkingTime(Vehicle vehicle) {
+    public LocalDateTime getParkingTime(ParkingVehicleDetails vehicle) {
         Slot slot = parkedVehicles.get(getSlot(vehicle));
         return slot.getParkingTime();
     }
 
-    public void isVehicleAlreadyPresent(Vehicle vehicle) throws ParkingLotException{
+    public void checkVehicleAlreadyPresent(ParkingVehicleDetails vehicle) throws ParkingLotException{
         if(isPresent(vehicle)){
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
         }
