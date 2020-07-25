@@ -3,7 +3,7 @@ package com.bridgelabz.parkinglot.service;
 import com.bridgelabz.parkinglot.exception.ParkingLotException;
 import com.bridgelabz.parkinglot.observer.IObserver;
 import com.bridgelabz.parkinglot.model.Vehicle;
-import com.bridgelabz.parkinglot.utility.Slot;
+import com.bridgelabz.parkinglot.model.Slot;
 import com.bridgelabz.parkinglot.utility.SlotAllotment;
 
 import java.time.LocalDateTime;
@@ -23,10 +23,6 @@ public class ParkingLot {
         this.slotAllotment = new SlotAllotment(parkingLotCapacity);
     }
 
-    public int getCountOfVehicles() {
-        return parkedVehicles.size();
-    }
-
     public void registerParkingLotObserver(IObserver observer) {
         this.observers.add(observer);
     }
@@ -37,9 +33,21 @@ public class ParkingLot {
         }
     }
 
+
+    public int getCountOfVehicles() {
+        return parkedVehicles.size();
+    }
+
+    public int getParkingCapacity() {
+        return parkingCapacity;
+    }
+
+
     public boolean isPresent(Vehicle vehicle) {
         return (parkedVehicles.containsValue(new Slot(vehicle, LocalDateTime.now().withNano(0))));
     }
+
+
 
     public void parkVehicle(Vehicle vehicle) throws ParkingLotException {
         if (vehicle == null)
@@ -47,7 +55,6 @@ public class ParkingLot {
 
         if (isPresent(vehicle))
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
-
         parkedVehicles.put(slotAllotment.getNearestParkingSlot(), new Slot(vehicle, LocalDateTime.now().withNano(0)));
         if (this.parkingCapacity == this.parkedVehicles.size()) {
             informListeners("Capacity is Full");
@@ -58,9 +65,9 @@ public class ParkingLot {
         if (vehicle == null)
             throw new ParkingLotException(ParkingLotException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
 
-        if (!isPresent(vehicle))
+        if (!isPresent(vehicle)) {
             throw new ParkingLotException(ParkingLotException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
-
+        }
         parkedVehicles.remove(getSlot(vehicle));
         informListeners("Capacity Available");
     }
@@ -71,19 +78,27 @@ public class ParkingLot {
             if (vehicle.equals(entry.getValue().getVehicle())) {
                 slot = entry.getKey();
                 slotAllotment.unParkUpdate(slot);
-                informListeners("Capacity Available");
             }
         }
         return slot;
     }
 
-    public Integer findVehicle(Vehicle vehicle) {
+    public Integer findVehicle(Vehicle vehicle) throws ParkingLotException {
         Integer slot = -1;
         for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
             if (vehicle.equals(entry.getValue().getVehicle())) {
                 slot = entry.getKey();
-                slotAllotment.unParkUpdate(slot);
-                informListeners("Capacity Available");
+                this.unParkVehicle(vehicle);
+            }
+        }
+        return slot;
+    }
+
+    public Integer getPositionOfVehicle(Vehicle vehicle) throws ParkingLotException {
+        Integer slot = -1;
+        for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
+            if (vehicle.equals(entry.getValue().getVehicle())) {
+                slot = entry.getKey();
             }
         }
         return slot;
@@ -94,11 +109,10 @@ public class ParkingLot {
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
         this.parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0)));
         slotAllotment.parkUpdate(slot);
-
     }
 
     public LocalDateTime getParkingTime(Vehicle vehicle) {
-        Slot slot = parkedVehicles.get(findVehicle(vehicle));
+        Slot slot = parkedVehicles.get(getSlot(vehicle));
         return slot.getParkingTime();
     }
 

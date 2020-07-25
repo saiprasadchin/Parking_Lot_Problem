@@ -10,16 +10,30 @@ public class ParkingLotSystem {
 
     public List<ParkingLot> parkingLots;
 
+    private static final String  DRIVER_TYPE_HANDICAPPED = "DRIVER_TYPE_HANDICAPPED";
+
     public ParkingLotSystem(ParkingLot... parkingLot) {
         this.parkingLots = new ArrayList<>(Arrays.asList(parkingLot));
     }
 
-    public void park(Vehicle vehicle) throws ParkingLotException {
+    public void addParking(ParkingLot parkingLot) {
+        this.parkingLots.add(parkingLot);
+    }
+    public int getNumberOfParkingLots() {
+        return this.parkingLots.size();
+    }
+
+    public void park(Vehicle vehicle,String driverType) throws ParkingLotException {
         for (ParkingLot parkingLot : this.parkingLots) {
             parkingLot.isVehicleAlreadyPresent(vehicle);
         }
-        parkingLots.sort(Comparator.comparing(ParkingLot::getCountOfVehicles));
-        parkingLots.get(0).parkVehicle(vehicle);
+        List<ParkingLot> listOfLots = new ArrayList(this.parkingLots);
+        if(driverType.equals(DRIVER_TYPE_HANDICAPPED)){
+            getLotForHandicap().parkVehicle(vehicle);
+        }else {
+            listOfLots.sort(Comparator.comparing(ParkingLot::getCountOfVehicles));
+            listOfLots.get(0).parkVehicle(vehicle);
+        }
     }
 
     public void unPark(Vehicle vehicle) throws ParkingLotException {
@@ -34,5 +48,17 @@ public class ParkingLotSystem {
             }
         }
         throw new ParkingLotException(ParkingLotException.ExceptionType.NO_SUCH_A_VEHICLE, "No Vehicle Found");
+    }
+
+    public Integer getParkingSlot(Vehicle vehicle) throws ParkingLotException {
+        ParkingLot parkingLot = this.getParkingLotInWhichVehicleIsParked(vehicle);
+        return parkingLot.getPositionOfVehicle(vehicle);
+    }
+
+    public ParkingLot getLotForHandicap() throws ParkingLotException {
+        return this.parkingLots.stream()
+                .filter(lot -> lot.getCountOfVehicles() != lot.getParkingCapacity())
+                .findFirst()
+                .orElseThrow(() -> new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_IS_FULL, "Parking Full"));
     }
 }
