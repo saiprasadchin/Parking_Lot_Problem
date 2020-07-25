@@ -19,7 +19,7 @@ public class SlotAllotment {
 
     public void setInitialParkingStatus(Integer parkingLotCapacity) {
         this.availableParkingSlots = new ArrayList<>();
-        IntStream.range(1, parkingLotCapacity+1).forEachOrdered(slots -> this.availableParkingSlots.add(slots));
+        IntStream.range(1, parkingLotCapacity + 1).forEachOrdered(slots -> this.availableParkingSlots.add(slots));
     }
 
     public void parkUpdate(Integer slot) {
@@ -33,7 +33,7 @@ public class SlotAllotment {
 
     public Integer getNearestParkingSlot() throws ParkingLotException {
         try {
-             return this.availableParkingSlots.remove(0);
+            return this.availableParkingSlots.remove(0);
         } catch (IndexOutOfBoundsException e) {
             throw new ParkingLotException(ParkingLotException.ExceptionType.PARKING_LOT_IS_FULL, "Parking Full");
         }

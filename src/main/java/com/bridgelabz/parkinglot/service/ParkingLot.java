@@ -114,9 +114,9 @@ public class ParkingLot {
         return slot.getParkingTime();
     }
 
-    public void checkVehicleAlreadyPresent(ParkingVehicleDetails vehicle) throws ParkingLotException{
-        if(isPresent(vehicle)){
-            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
+    public void checkVehicleAlreadyPresent(ParkingVehicleDetails vehicle) throws ParkingLotException {
+        if (isPresent(vehicle)) {
+            throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Vehicle Already present");
         }
     }
 }

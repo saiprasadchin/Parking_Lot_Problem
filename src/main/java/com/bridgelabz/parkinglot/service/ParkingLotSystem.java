@@ -1,9 +1,10 @@
 package com.bridgelabz.parkinglot.service;
 
+import com.bridgelabz.parkinglot.enums.VehicleColour;
 import com.bridgelabz.parkinglot.exception.ParkingLotException;
-import com.bridgelabz.parkinglot.model.DriverType;
+import com.bridgelabz.parkinglot.enums.DriverType;
 import com.bridgelabz.parkinglot.model.ParkingVehicleDetails;
-import com.bridgelabz.parkinglot.model.VehicleSize;
+import com.bridgelabz.parkinglot.enums.VehicleSize;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ public class ParkingLotSystem {
     public void addParking(ParkingLot parkingLot) {
         this.parkingLots.add(parkingLot);
     }
+
     public int getNumberOfParkingLots() {
         return this.parkingLots.size();
     }
@@ -29,13 +31,13 @@ public class ParkingLotSystem {
         for (ParkingLot parkingLot : lots) {
             parkingLot.checkVehicleAlreadyPresent(vehicle);
         }
-        if(vehicle.getVehicleSize().equals(VehicleSize.LARGE)){
+        if (vehicle.getVehicleSize().equals(VehicleSize.LARGE)) {
             parkingLotAlLot = LotAllotmentService.getLotForLarge(this.parkingLots);
         }
-        if(vehicle.getDriverType().equals(DriverType.HANDICAPPED)){
+        if (vehicle.getDriverType().equals(DriverType.HANDICAPPED)) {
             parkingLotAlLot = LotAllotmentService.getLotForHandicapped(this.parkingLots);
         }
-        if(vehicle.getDriverType().equals(DriverType.NORMAL)){
+        if (vehicle.getDriverType().equals(DriverType.NORMAL)) {
             parkingLotAlLot = LotAllotmentService.getLotForNormal(this.parkingLots);
         }
         parkingLotAlLot.parkVehicle(vehicle);
@@ -60,4 +62,19 @@ public class ParkingLotSystem {
         return parkingLot.getPositionOfVehicle(vehicle);
     }
 
+    public Map<ParkingLot, List<Integer>> getSlotListOfVehiclesByColor(VehicleColour vehicleColour) {
+        Map<ParkingLot, List<Integer>> vehiclesWithSpecificColor = new HashMap<ParkingLot, List<Integer>>();
+        for (ParkingLot parkingLot : this.parkingLots) {
+            List<Integer> slotNumbers = new ArrayList<>();
+            for (Integer slotNumber : parkingLot.parkedVehicles.keySet()) {
+                if (parkingLot.parkedVehicles.get(slotNumber).getVehicle().getVehicleColour().equals(vehicleColour)) {
+                    slotNumbers.add(slotNumber);
+                }
+            }
+            if (slotNumbers.size() > 0) {
+                vehiclesWithSpecificColor.put(parkingLot, slotNumbers);
+            }
+        }
+        return vehiclesWithSpecificColor;
+    }
 }
