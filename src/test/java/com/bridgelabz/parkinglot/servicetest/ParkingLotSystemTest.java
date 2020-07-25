@@ -191,7 +191,6 @@ public class ParkingLotSystemTest {
         }
     }
 
-    //====================================================
     @Test
     public void givenAParkingLot_ShouldGetAddedToTheParkingLotsManagedByTheSystem() {
         ParkingLot parkingLot3 = new ParkingLot(5);
@@ -257,6 +256,20 @@ public class ParkingLotSystemTest {
             Integer actualResult = parkingLotSystem.getParkingSlot(firstVehicle);
             Assert.assertEquals(expectedResult,parkingLot);
             Assert.assertEquals((Integer)1, actualResult);
+        } catch (ParkingLotException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void givenAVehicleWithHandicappedDriver_IfFirstLotHasEmptySlotsTheVehicle_ShouldParkedInTheFirstParkingLot() {
+        try {
+            parkingLotSystem.park(firstVehicle, DRIVER_TYPE_HANDICAPPED);
+            parkingLotSystem.park(secondVehicle, DRIVER_TYPE_HANDICAPPED);
+            ParkingLot presentLot1 = parkingLotSystem.getParkingLotInWhichVehicleIsParked(firstVehicle);
+            ParkingLot presentLot2 = parkingLotSystem.getParkingLotInWhichVehicleIsParked(secondVehicle);
+            Assert.assertEquals(firstParkingLot, presentLot1);
+            Assert.assertEquals(firstParkingLot, presentLot2);
         } catch (ParkingLotException e) {
             e.printStackTrace();
         }

@@ -47,8 +47,6 @@ public class ParkingLot {
         return (parkedVehicles.containsValue(new Slot(vehicle, LocalDateTime.now().withNano(0))));
     }
 
-
-
     public void parkVehicle(Vehicle vehicle) throws ParkingLotException {
         if (vehicle == null)
             throw new ParkingLotException(ParkingLotException.ExceptionType.INVALID_VEHICLE, "Invalid Vehicle");
