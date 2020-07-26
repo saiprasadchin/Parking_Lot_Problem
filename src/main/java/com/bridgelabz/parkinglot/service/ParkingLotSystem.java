@@ -34,11 +34,9 @@ public class ParkingLotSystem {
         }
         if (vehicle.getVehicleSize().equals(VehicleSize.LARGE)) {
             parkingLotAlLot = LotAllotmentService.getLotForLarge(this.parkingLots);
-        }
-        else if (vehicle.getDriverType().equals(DriverType.HANDICAPPED)) {
+        } else if (vehicle.getDriverType().equals(DriverType.HANDICAPPED)) {
             parkingLotAlLot = LotAllotmentService.getLotForHandicapped(this.parkingLots);
-        }
-        else if (vehicle.getDriverType().equals(DriverType.NORMAL)) {
+        } else if (vehicle.getDriverType().equals(DriverType.NORMAL)) {
             parkingLotAlLot = LotAllotmentService.getLotForNormal(this.parkingLots);
         }
         parkingLotAlLot.parkVehicle(vehicle);
@@ -105,5 +103,16 @@ public class ParkingLotSystem {
             }
         }
         return slotNumbersByTime;
+    }
+
+    public Map<ParkingLot, List<Integer>> getSlotNumbersBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
+        Map<ParkingLot, List<Integer>> lotAndSlotNumbers = new HashMap<>();
+        for (ParkingLot parkingLot : this.parkingLots) {
+            List<Integer> slotNumbers = parkingLot.getSlotNumbersBySizeAndDriverType(driverType, vehicleSize);
+            if (slotNumbers.size() > 0) {
+                lotAndSlotNumbers.put(parkingLot, slotNumbers);
+            }
+        }
+        return lotAndSlotNumbers;
     }
 }

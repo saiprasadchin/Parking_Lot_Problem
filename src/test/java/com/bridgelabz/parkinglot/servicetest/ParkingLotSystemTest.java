@@ -352,4 +352,20 @@ public class ParkingLotSystemTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void givenARequestToGetSlotsOfAllSmallHandicapped_WhenFound_ShouldReturnListOfSimilarVehiclesSlotNumber() {
+        ParkingVehicleDetails vehicle1 = new ParkingVehicleDetails(firstVehicle, VehicleSize.SMALL, DriverType.HANDICAPPED, "sagar");
+        ParkingVehicleDetails vehicle2 = new ParkingVehicleDetails(secondVehicle, VehicleSize.SMALL, DriverType.HANDICAPPED, "arjun");
+        try {
+            parkingLotSystem.park(vehicle1);
+            parkingLotSystem.park(vehicle2);
+            Map<ParkingLot, List<Integer>> slotNumberBySizeAndDriverType =
+                    parkingLotSystem.getSlotNumbersBySizeAndDriverType(DriverType.HANDICAPPED, VehicleSize.SMALL);
+            Assert.assertEquals(1, slotNumberBySizeAndDriverType.get(firstParkingLot).get(0).intValue());
+            Assert.assertEquals(2, slotNumberBySizeAndDriverType.get(firstParkingLot).get(1).intValue());
+        } catch (ParkingLotException e) {
+            e.printStackTrace();
+        }
+    }
 }

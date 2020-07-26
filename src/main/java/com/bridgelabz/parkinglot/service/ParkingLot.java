@@ -1,7 +1,9 @@
 package com.bridgelabz.parkinglot.service;
 
+import com.bridgelabz.parkinglot.enums.DriverType;
 import com.bridgelabz.parkinglot.enums.VehicleColour;
 import com.bridgelabz.parkinglot.enums.VehicleCompany;
+import com.bridgelabz.parkinglot.enums.VehicleSize;
 import com.bridgelabz.parkinglot.exception.ParkingLotException;
 import com.bridgelabz.parkinglot.observer.IObserver;
 import com.bridgelabz.parkinglot.model.ParkingVehicleDetails;
@@ -119,6 +121,7 @@ public class ParkingLot {
     public LocalDateTime getCurrentTime() {
         return LocalDateTime.now();
     }
+
     public void checkVehicleAlreadyPresent(ParkingVehicleDetails vehicle) throws ParkingLotException {
         if (isPresent(vehicle)) {
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Vehicle Already present");
@@ -140,8 +143,8 @@ public class ParkingLot {
         for (Integer slotNumber : parkedVehicles.keySet()) {
             if (parkedVehicles.get(slotNumber).getVehicle().getVehicle().getVehicleColour().equals(vehicleColour) &&
                     parkedVehicles.get(slotNumber).getVehicle().getVehicle().getCompany().equals(vehicleCompany)) {
-                slotNumbers.add(parkedVehicles.get(slotNumber).getVehicle().getVehicle().getVehicleNumber()+
-                        " "+parkedVehicles.get(slotNumber).getVehicle().getAttendantName());
+                slotNumbers.add(parkedVehicles.get(slotNumber).getVehicle().getVehicle().getVehicleNumber() +
+                        " " + parkedVehicles.get(slotNumber).getVehicle().getAttendantName());
             }
         }
         return slotNumbers;
@@ -161,6 +164,17 @@ public class ParkingLot {
         List<Integer> slotNumbers = new ArrayList<>();
         for (Integer slotNumber : parkedVehicles.keySet()) {
             if ((parkedVehicles.get(slotNumber).getParkingTime().getMinute() - getCurrentTime().getMinute()) <= time) {
+                slotNumbers.add(slotNumber);
+            }
+        }
+        return slotNumbers;
+    }
+
+    public List<Integer> getSlotNumbersBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
+        List<Integer> slotNumbers = new ArrayList<>();
+        for (Integer slotNumber : parkedVehicles.keySet()) {
+            if (parkedVehicles.get(slotNumber).getVehicle().getVehicleSize() == vehicleSize &&
+                    parkedVehicles.get(slotNumber).getVehicle().getDriverType() == driverType) {
                 slotNumbers.add(slotNumber);
             }
         }
