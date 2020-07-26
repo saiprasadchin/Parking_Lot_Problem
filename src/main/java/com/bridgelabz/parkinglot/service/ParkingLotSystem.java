@@ -1,6 +1,7 @@
 package com.bridgelabz.parkinglot.service;
 
 import com.bridgelabz.parkinglot.enums.VehicleColour;
+import com.bridgelabz.parkinglot.enums.VehicleCompany;
 import com.bridgelabz.parkinglot.exception.ParkingLotException;
 import com.bridgelabz.parkinglot.enums.DriverType;
 import com.bridgelabz.parkinglot.model.ParkingVehicleDetails;
@@ -62,19 +63,25 @@ public class ParkingLotSystem {
         return parkingLot.getPositionOfVehicle(vehicle);
     }
 
-    public Map<ParkingLot, List<Integer>> getSlotListOfVehiclesByColor(VehicleColour vehicleColour) {
-        Map<ParkingLot, List<Integer>> vehiclesWithSpecificColor = new HashMap<ParkingLot, List<Integer>>();
+    public Map<ParkingLot, List<Integer>> getLotAndSlotListOfVehiclesByColor(VehicleColour vehicleColour) {
+        Map<ParkingLot, List<Integer>> vehiclesWithSpecificColor = new HashMap<>();
         for (ParkingLot parkingLot : this.parkingLots) {
-            List<Integer> slotNumbers = new ArrayList<>();
-            for (Integer slotNumber : parkingLot.parkedVehicles.keySet()) {
-                if (parkingLot.parkedVehicles.get(slotNumber).getVehicle().getVehicleColour().equals(vehicleColour)) {
-                    slotNumbers.add(slotNumber);
-                }
-            }
-            if (slotNumbers.size() > 0) {
-                vehiclesWithSpecificColor.put(parkingLot, slotNumbers);
+            List<Integer> listOfSlots = parkingLot.getListOfSlotsByColour(vehicleColour);
+            if (listOfSlots.size() > 0) {
+                vehiclesWithSpecificColor.put(parkingLot, listOfSlots);
             }
         }
         return vehiclesWithSpecificColor;
+    }
+
+    public Map<ParkingLot, List<Integer>> getLotAndSlotNumberByCompanyAndColor(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
+        Map<ParkingLot, List<Integer>> vehicleByCompanyAndColour = new HashMap<>();
+        for (ParkingLot parkingLot : this.parkingLots) {
+            List<Integer> listOfSlots = parkingLot.getSlotNumbersByCompanyAndColour(vehicleCompany, vehicleColour);
+            if (listOfSlots.size() > 0) {
+                vehicleByCompanyAndColour.put(parkingLot, listOfSlots);
+            }
+        }
+        return vehicleByCompanyAndColour;
     }
 }

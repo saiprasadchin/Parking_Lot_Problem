@@ -9,19 +9,19 @@ import java.util.Objects;
 
 public class ParkingVehicleDetails {
 
-    private Object vehicle;
+    private Vehicle vehicle;
     private VehicleSize vehicleSize;
     private DriverType driverType;
-    private VehicleColour vehicleColour;
+    private String attendantName;
 
-    public ParkingVehicleDetails(Object vehicle, VehicleSize vehicleSize, DriverType driverType, VehicleColour vehicleColour) {
+    public ParkingVehicleDetails(Vehicle vehicle, VehicleSize vehicleSize, DriverType driverType, String attendantName) {
         this.vehicle = vehicle;
         this.vehicleSize = vehicleSize;
         this.driverType = driverType;
-        this.vehicleColour = vehicleColour;
+        this.attendantName = attendantName;
     }
 
-    public Object getVehicle() {
+    public Vehicle getVehicle() {
         return vehicle;
     }
 
@@ -33,23 +33,23 @@ public class ParkingVehicleDetails {
         return driverType;
     }
 
-    public VehicleColour getVehicleColour() {
-        return vehicleColour;
+    public String getAttendantName() {
+        return attendantName;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParkingVehicleDetails vehicle1 = (ParkingVehicleDetails) o;
-        return vehicle.equals(vehicle1.vehicle) &&
-                vehicleSize == vehicle1.vehicleSize &&
-                driverType == vehicle1.driverType &&
-                vehicleColour == vehicle1.vehicleColour;
+        ParkingVehicleDetails that = (ParkingVehicleDetails) o;
+        return Objects.equals(vehicle, that.vehicle) &&
+                vehicleSize == that.vehicleSize &&
+                driverType == that.driverType &&
+                Objects.equals(attendantName, that.attendantName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vehicle, vehicleSize, driverType, vehicleColour);
+        return Objects.hash(vehicle, vehicleSize, driverType, attendantName);
     }
 }
