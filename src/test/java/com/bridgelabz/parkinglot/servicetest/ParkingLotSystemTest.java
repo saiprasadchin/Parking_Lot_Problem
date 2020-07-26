@@ -42,7 +42,7 @@ public class ParkingLotSystemTest {
         this.thirdParkingLot = new ParkingLot(3);
         this.firstVehicle = new Vehicle("MH04 A 4444", VehicleCompany.TOYOTA, VehicleColour.WHITE);
         this.secondVehicle = new Vehicle("MH05 Y 5555", VehicleCompany.TOYOTA, VehicleColour.WHITE);
-        this.thirdVehicle = new Vehicle("MH06 AD 6666", VehicleCompany.TOYOTA, VehicleColour.WHITE);
+        //this.thirdVehicle = new Vehicle("MH06 AD 6666", VehicleCompany.TOYOTA, VehicleColour.WHITE);
         this.firstVehicleDetails = new ParkingVehicleDetails(firstVehicle, VehicleSize.SMALL, DriverType.NORMAL, "Saiprasad");
         this.secondVehicleDetails = new ParkingVehicleDetails(secondVehicle, VehicleSize.SMALL, DriverType.NORMAL, "Sagar");
         //this.thirdVehicleDetails = new ParkingVehicleDetails(thirdVehicle, VehicleSize.SMALL, DriverType.NORMAL, VehicleColour.WHITE, "Arjun");
@@ -295,14 +295,14 @@ public class ParkingLotSystemTest {
     }
 
     @Test
-    public void givenVehiclesColour_WhenFound_ShouldReturnListOfWhitVehicleWithSlotNumber() {
+    public void givenVehiclesColour_WhenFound_ShouldReturnListOfSlotNumber() {
         try {
             parkingLotSystem.park(firstVehicleDetails);
             parkingLotSystem.park(secondVehicleDetails);
-            Map<ParkingLot, List<Integer>> slotNumberListOfVehiclesByColor =
+            Map<ParkingLot, List<Integer>> slotNumbersByColor =
                     parkingLotSystem.getLotAndSlotListOfVehiclesByColor(VehicleColour.WHITE);
-            Assert.assertEquals(1, slotNumberListOfVehiclesByColor.get(firstParkingLot).get(0).intValue());
-            Assert.assertEquals(1, slotNumberListOfVehiclesByColor.get(secondParkingLot).get(0).intValue());
+            Assert.assertEquals(1, slotNumbersByColor.get(firstParkingLot).get(0).intValue());
+            Assert.assertEquals(1, slotNumbersByColor.get(secondParkingLot).get(0).intValue());
         } catch (ParkingLotException e) {
             e.printStackTrace();
         }
@@ -310,16 +310,31 @@ public class ParkingLotSystemTest {
 
 
     @Test
-    public void givenARequestToGetSlotsOfAllBlueToyota_WhenFound_ShouldReturnListOfSimilarVehiclesSlotNumber() {
+    public void givenBlueToyotaVehicle_WhenFound_ShouldReturnListOfSlotNumber() {
         Vehicle vehicle = new Vehicle("MH04 AB 9999", VehicleCompany.TOYOTA, VehicleColour.BLUE);
         ParkingVehicleDetails vehicleDetails = new ParkingVehicleDetails(vehicle, VehicleSize.LARGE, DriverType.NORMAL, "Sagar");
         try {
 
             parkingLotSystem.park(firstVehicleDetails);
             parkingLotSystem.park(vehicleDetails);
-            Map<ParkingLot, List<Integer>> slotNumberListOfVehiclesByCompanyAndColor =
+            Map<ParkingLot, List<Integer>> slotNumbersByCompanyAndColor =
                     parkingLotSystem.getLotAndSlotNumberByCompanyAndColor(VehicleCompany.TOYOTA, VehicleColour.BLUE);
-            Assert.assertEquals(1, slotNumberListOfVehiclesByCompanyAndColor.get(secondParkingLot).get(0).intValue());
+            Assert.assertEquals(1, slotNumbersByCompanyAndColor.get(secondParkingLot).get(0).intValue());
+        } catch (ParkingLotException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void givenBMWVehicle_WhenFound_ShouldReturnListOfSlotNumber() {
+        Vehicle vehicle = new Vehicle("MH04 AB 9999", VehicleCompany.BMW, VehicleColour.WHITE);
+        ParkingVehicleDetails vehicleDetails = new ParkingVehicleDetails(vehicle, VehicleSize.LARGE, DriverType.NORMAL, "Sagar");
+        try {
+            parkingLotSystem.park(firstVehicleDetails);
+            parkingLotSystem.park(vehicleDetails);
+            Map<ParkingLot, List<Integer>> slotNumbersByCompany =
+                    parkingLotSystem.getSlotNumbersOfVehiclesByCompany(VehicleCompany.BMW);
+            Assert.assertEquals(1, slotNumbersByCompany.get(secondParkingLot).get(0).intValue());
         } catch (ParkingLotException e) {
             e.printStackTrace();
         }

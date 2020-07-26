@@ -142,4 +142,14 @@ public class ParkingLot {
         }
         return slotNumbers;
     }
+
+    public List<Integer> getSlotNumbersByCompany(VehicleCompany vehicleCompany) {
+        List<Integer> slotNumbers = new ArrayList<>();
+        for (Integer slotNumber : parkedVehicles.keySet()) {
+            if (parkedVehicles.get(slotNumber).getVehicle().getVehicle().getCompany().equals(vehicleCompany)) {
+                slotNumbers.add(slotNumber);
+            }
+        }
+        return slotNumbers;
+    }
 }

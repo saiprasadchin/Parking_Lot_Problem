@@ -66,9 +66,9 @@ public class ParkingLotSystem {
     public Map<ParkingLot, List<Integer>> getLotAndSlotListOfVehiclesByColor(VehicleColour vehicleColour) {
         Map<ParkingLot, List<Integer>> vehiclesWithSpecificColor = new HashMap<>();
         for (ParkingLot parkingLot : this.parkingLots) {
-            List<Integer> listOfSlots = parkingLot.getListOfSlotsByColour(vehicleColour);
-            if (listOfSlots.size() > 0) {
-                vehiclesWithSpecificColor.put(parkingLot, listOfSlots);
+            List<Integer> slotNumbers = parkingLot.getListOfSlotsByColour(vehicleColour);
+            if (slotNumbers.size() > 0) {
+                vehiclesWithSpecificColor.put(parkingLot, slotNumbers);
             }
         }
         return vehiclesWithSpecificColor;
@@ -77,11 +77,22 @@ public class ParkingLotSystem {
     public Map<ParkingLot, List<Integer>> getLotAndSlotNumberByCompanyAndColor(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
         Map<ParkingLot, List<Integer>> vehicleByCompanyAndColour = new HashMap<>();
         for (ParkingLot parkingLot : this.parkingLots) {
-            List<Integer> listOfSlots = parkingLot.getSlotNumbersByCompanyAndColour(vehicleCompany, vehicleColour);
-            if (listOfSlots.size() > 0) {
-                vehicleByCompanyAndColour.put(parkingLot, listOfSlots);
+            List<Integer> slotNumbers = parkingLot.getSlotNumbersByCompanyAndColour(vehicleCompany, vehicleColour);
+            if (slotNumbers.size() > 0) {
+                vehicleByCompanyAndColour.put(parkingLot, slotNumbers);
             }
         }
         return vehicleByCompanyAndColour;
+    }
+
+    public Map<ParkingLot, List<Integer>> getSlotNumbersOfVehiclesByCompany(VehicleCompany vehicleCompany) {
+        Map<ParkingLot, List<Integer>> vehicleByCompany = new HashMap<>();
+        for (ParkingLot parkingLot : this.parkingLots) {
+            List<Integer> slotNumbers = parkingLot.getSlotNumbersByCompany(vehicleCompany);
+            if (slotNumbers.size() > 0) {
+                vehicleByCompany.put(parkingLot, slotNumbers);
+            }
+        }
+        return vehicleByCompany;
     }
 }
