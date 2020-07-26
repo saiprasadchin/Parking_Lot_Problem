@@ -12,6 +12,7 @@ import com.bridgelabz.parkinglot.utility.SlotAllotment;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ParkingLot {
 
@@ -57,7 +58,8 @@ public class ParkingLot {
 
         if (isPresent(vehicle))
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
-        parkedVehicles.put(slotAllotment.getNearestParkingSlot(), new Slot(vehicle, LocalDateTime.now().withNano(0)));
+        Integer slot = slotAllotment.getNearestParkingSlot();
+        parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0),slot));
         if (this.parkingCapacity == this.parkedVehicles.size()) {
             informListeners("Capacity is Full");
         }
@@ -109,7 +111,7 @@ public class ParkingLot {
     public void parkVehicle(int slot, ParkingVehicleDetails vehicle) throws ParkingLotException {
         if (isPresent(vehicle))
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Vehicle Already present");
-        this.parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0)));
+        this.parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0), slot));
         slotAllotment.parkUpdate(slot);
     }
 
@@ -179,5 +181,28 @@ public class ParkingLot {
             }
         }
         return slotNumbers;
+
+    }
+
+    public List<Integer> getAllVehiclesParkedInParkingLot() {
+        List<Integer> slotNumbers = new ArrayList<>();
+        for (Integer slotNumber : parkedVehicles.keySet()) {
+            slotNumbers.add(slotNumber);
+        }
+        return slotNumbers;
+    }
+
+    public List<String> getCompleteVehiclesList(DriverType driverType, VehicleSize vehicleSize) {
+        List<String> parkingLotList = this.parkedVehicles.values()
+                .stream()
+                .filter(parkingSlot -> parkingSlot.getVehicle().getDriverType() == driverType )
+                .filter(parkingSlot -> parkingSlot.getVehicle().getVehicleSize() == vehicleSize )
+                .map(parkingSlot -> ((parkingSlot.getSlotNumber() +" "
+                        +parkingSlot.getVehicle().getVehicle().getCompany()) + " "
+                        + (parkingSlot.getVehicle().getVehicle().getVehicleColour()) + " "
+                        + (parkingSlot.getVehicle().getVehicleSize()) + " "
+                        + (parkingSlot.getVehicle().getAttendantName())))
+                .collect(Collectors.toList());
+        return parkingLotList;
     }
 }

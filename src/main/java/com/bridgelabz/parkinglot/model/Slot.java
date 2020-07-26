@@ -6,15 +6,17 @@ import java.util.Objects;
 public class Slot {
     private ParkingVehicleDetails vehicle;
     private LocalDateTime parkingTime;
+    Integer slotNumber ;
 
-    public Slot(ParkingVehicleDetails vehicle, LocalDateTime parkingTime) {
+    public Slot(ParkingVehicleDetails vehicle, LocalDateTime parkingTime, Integer slotNumber) {
         this.vehicle = vehicle;
         this.parkingTime = parkingTime;
+        this.slotNumber = slotNumber;
     }
 
-   /* public Vehicle getVehicle() {
-        return vehicle.getVehicle();
-    }*/
+    public int getSlotNumber() {
+        return slotNumber;
+    }
 
     public ParkingVehicleDetails getVehicle() {
         return vehicle;

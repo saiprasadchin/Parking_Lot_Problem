@@ -105,10 +105,21 @@ public class ParkingLotSystem {
         return slotNumbersByTime;
     }
 
-    public Map<ParkingLot, List<Integer>> getSlotNumbersBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
+    public Map<ParkingLot, List<String>> getSlotNumbersBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
+        Map<ParkingLot, List<String>> lotAndSlotNumbers = new HashMap<>();
+        for (ParkingLot parkingLot : this.parkingLots) {
+            List<String> slotNumbers = parkingLot.getCompleteVehiclesList(driverType,vehicleSize);
+            if (slotNumbers.size() > 0) {
+                lotAndSlotNumbers.put(parkingLot, slotNumbers);
+            }
+        }
+        return lotAndSlotNumbers;
+    }
+
+    public Map<ParkingLot, List<Integer>> getAllVehiclesParkedInParkingLot() {
         Map<ParkingLot, List<Integer>> lotAndSlotNumbers = new HashMap<>();
         for (ParkingLot parkingLot : this.parkingLots) {
-            List<Integer> slotNumbers = parkingLot.getSlotNumbersBySizeAndDriverType(driverType, vehicleSize);
+            List<Integer> slotNumbers = parkingLot.getAllVehiclesParkedInParkingLot();
             if (slotNumbers.size() > 0) {
                 lotAndSlotNumbers.put(parkingLot, slotNumbers);
             }

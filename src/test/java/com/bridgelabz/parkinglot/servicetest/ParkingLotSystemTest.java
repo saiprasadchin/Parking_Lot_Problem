@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,14 +40,14 @@ public class ParkingLotSystemTest {
         this.parkingLot = new ParkingLot(2);
         this.firstParkingLot = new ParkingLot(3);
         this.secondParkingLot = new ParkingLot(3);
-        this.thirdParkingLot = new ParkingLot(3);
+        //this.thirdParkingLot = new ParkingLot(3);
         this.firstVehicle = new Vehicle("MH04 A 4444", VehicleCompany.TOYOTA, VehicleColour.WHITE);
         this.secondVehicle = new Vehicle("MH05 Y 5555", VehicleCompany.TOYOTA, VehicleColour.WHITE);
-        //this.thirdVehicle = new Vehicle("MH06 AD 6666", VehicleCompany.TOYOTA, VehicleColour.WHITE);
+        this.thirdVehicle = new Vehicle("MH06 AD 6666", VehicleCompany.TOYOTA, VehicleColour.WHITE);
         this.firstVehicleDetails = new ParkingVehicleDetails(firstVehicle, VehicleSize.SMALL, DriverType.NORMAL, "Saiprasad");
         this.secondVehicleDetails = new ParkingVehicleDetails(secondVehicle, VehicleSize.SMALL, DriverType.NORMAL, "Sagar");
-        //this.thirdVehicleDetails = new ParkingVehicleDetails(thirdVehicle, VehicleSize.SMALL, DriverType.NORMAL, VehicleColour.WHITE, "Arjun");
-        this.parkingLotSystem = new ParkingLotSystem(firstParkingLot, secondParkingLot, thirdParkingLot);
+        this.thirdVehicleDetails = new ParkingVehicleDetails(thirdVehicle, VehicleSize.SMALL, DriverType.NORMAL, "Arjun");
+        this.parkingLotSystem = new ParkingLotSystem(firstParkingLot, secondParkingLot);
     }
 
     @Test
@@ -55,6 +56,7 @@ public class ParkingLotSystemTest {
         try {
             parkingLot.parkVehicle(firstVehicleDetails);
             isParked = parkingLot.isPresent(firstVehicleDetails);
+            //System.out.println(parkingLot.getCompleteVehiclesList());
             Assert.assertTrue(isParked);
         } catch (ParkingLotException e) {
             e.printStackTrace();
@@ -201,7 +203,7 @@ public class ParkingLotSystemTest {
         parkingLotSystem.addParking(parkingLot3);
         parkingLotSystem.addParking(parkingLot4);
         int numberOfParkingLots = parkingLotSystem.getNumberOfParkingLots();
-        Assert.assertEquals(5, numberOfParkingLots);
+        Assert.assertEquals(4, numberOfParkingLots);
     }
 
     @Test
@@ -288,7 +290,7 @@ public class ParkingLotSystemTest {
             parkingLotSystem.park(secondVehicleDetails);
             parkingLotSystem.park(vehicle1);
             ParkingLot highestNumOfFreeSpace = parkingLotSystem.getParkingLotInWhichVehicleIsParked(vehicle1);
-            Assert.assertEquals(thirdParkingLot, highestNumOfFreeSpace);
+            Assert.assertEquals(secondParkingLot, highestNumOfFreeSpace);
         } catch (ParkingLotException e) {
             e.printStackTrace();
         }
@@ -340,7 +342,7 @@ public class ParkingLotSystemTest {
     }
 
     @Test
-    public void givenARequestToGetSlotsOfAllVehicleParkedBefore30Min_WhenFound_ShouldReturnListOfSimilarVehiclesSlotNumber() {
+    public void givenVehicleParkedBefore30Min_WhenFound_ShouldReturnListVehiclesSlotNumber() {
         try {
             parkingLotSystem.park(firstVehicleDetails);
             parkingLotSystem.park(secondVehicleDetails);
@@ -354,16 +356,37 @@ public class ParkingLotSystemTest {
     }
 
     @Test
-    public void givenARequestToGetSlotsOfAllSmallHandicapped_WhenFound_ShouldReturnListOfSimilarVehiclesSlotNumber() {
+    public void givenARequestToGetSlotsOfAllSmallHandicapped_WhenFound_ShouldReturnListOfSlotNumber() {
         ParkingVehicleDetails vehicle1 = new ParkingVehicleDetails(firstVehicle, VehicleSize.SMALL, DriverType.HANDICAPPED, "sagar");
         ParkingVehicleDetails vehicle2 = new ParkingVehicleDetails(secondVehicle, VehicleSize.SMALL, DriverType.HANDICAPPED, "arjun");
+        ArrayList<String> firstLotOutput = new ArrayList<>(Arrays.asList("1 TOYOTA WHITE SMALL sagar","2 TOYOTA WHITE SMALL arjun"));
         try {
             parkingLotSystem.park(vehicle1);
             parkingLotSystem.park(vehicle2);
-            Map<ParkingLot, List<Integer>> slotNumberBySizeAndDriverType =
+            Map<ParkingLot, List<String>> slotNumberBySizeAndDriverType =
                     parkingLotSystem.getSlotNumbersBySizeAndDriverType(DriverType.HANDICAPPED, VehicleSize.SMALL);
-            Assert.assertEquals(1, slotNumberBySizeAndDriverType.get(firstParkingLot).get(0).intValue());
-            Assert.assertEquals(2, slotNumberBySizeAndDriverType.get(firstParkingLot).get(1).intValue());
+
+            Assert.assertEquals(firstLotOutput, slotNumberBySizeAndDriverType.get(firstParkingLot));
+        } catch (ParkingLotException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void givenARequestToGetSlotsOfAllParkedVehicles_WhenFound_ShouldReturnListOfSlotNumber() {
+        ParkingVehicleDetails vehicle1 = new ParkingVehicleDetails(firstVehicle, VehicleSize.SMALL, DriverType.NORMAL, "sagar");
+        ParkingVehicleDetails vehicle2 = new ParkingVehicleDetails(secondVehicle, VehicleSize.SMALL, DriverType.NORMAL, "arjun");
+        ArrayList<Integer> firstLotOutput = new ArrayList<>(Arrays.asList(1, 2));
+        ArrayList<Integer> secondLotOutput = new ArrayList<>(Arrays.asList(1, 2));
+        try {
+            parkingLotSystem.park(firstVehicleDetails);
+            parkingLotSystem.park(secondVehicleDetails);
+            parkingLotSystem.park(vehicle1);
+            parkingLotSystem.park(vehicle2);
+            Map<ParkingLot, List<Integer>> slotNumberList =
+                    parkingLotSystem.getAllVehiclesParkedInParkingLot();
+            Assert.assertEquals(firstLotOutput, slotNumberList.get(firstParkingLot));
+            Assert.assertEquals(secondLotOutput, slotNumberList.get(secondParkingLot));
         } catch (ParkingLotException e) {
             e.printStackTrace();
         }
