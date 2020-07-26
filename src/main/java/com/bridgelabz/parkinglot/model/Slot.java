@@ -12,6 +12,10 @@ public class Slot {
         this.parkingTime = parkingTime;
     }
 
+   /* public Vehicle getVehicle() {
+        return vehicle.getVehicle();
+    }*/
+
     public ParkingVehicleDetails getVehicle() {
         return vehicle;
     }

@@ -314,12 +314,11 @@ public class ParkingLotSystemTest {
         Vehicle vehicle = new Vehicle("MH04 AB 9999", VehicleCompany.TOYOTA, VehicleColour.BLUE);
         ParkingVehicleDetails vehicleDetails = new ParkingVehicleDetails(vehicle, VehicleSize.LARGE, DriverType.NORMAL, "Sagar");
         try {
-
             parkingLotSystem.park(firstVehicleDetails);
             parkingLotSystem.park(vehicleDetails);
-            Map<ParkingLot, List<Integer>> slotNumbersByCompanyAndColor =
+            Map<ParkingLot, List<String>> slotNumbersByCompanyAndColor =
                     parkingLotSystem.getLotAndSlotNumberByCompanyAndColor(VehicleCompany.TOYOTA, VehicleColour.BLUE);
-            Assert.assertEquals(1, slotNumbersByCompanyAndColor.get(secondParkingLot).get(0).intValue());
+            Assert.assertEquals("MH04 AB 9999 Sagar", slotNumbersByCompanyAndColor.get(secondParkingLot).get(0));
         } catch (ParkingLotException e) {
             e.printStackTrace();
         }
@@ -335,6 +334,20 @@ public class ParkingLotSystemTest {
             Map<ParkingLot, List<Integer>> slotNumbersByCompany =
                     parkingLotSystem.getSlotNumbersOfVehiclesByCompany(VehicleCompany.BMW);
             Assert.assertEquals(1, slotNumbersByCompany.get(secondParkingLot).get(0).intValue());
+        } catch (ParkingLotException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void givenARequestToGetSlotsOfAllVehicleParkedBefore30Min_WhenFound_ShouldReturnListOfSimilarVehiclesSlotNumber() {
+        try {
+            parkingLotSystem.park(firstVehicleDetails);
+            parkingLotSystem.park(secondVehicleDetails);
+            Map<ParkingLot, List<Integer>> slotNumbersVehiclesByTime =
+                    parkingLotSystem.getVehiclesParkedFromTime(30);
+            Assert.assertEquals(1, slotNumbersVehiclesByTime.get(firstParkingLot).get(0).intValue());
+            Assert.assertEquals(1, slotNumbersVehiclesByTime.get(secondParkingLot).get(0).intValue());
         } catch (ParkingLotException e) {
             e.printStackTrace();
         }

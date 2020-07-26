@@ -35,10 +35,10 @@ public class ParkingLotSystem {
         if (vehicle.getVehicleSize().equals(VehicleSize.LARGE)) {
             parkingLotAlLot = LotAllotmentService.getLotForLarge(this.parkingLots);
         }
-        if (vehicle.getDriverType().equals(DriverType.HANDICAPPED)) {
+        else if (vehicle.getDriverType().equals(DriverType.HANDICAPPED)) {
             parkingLotAlLot = LotAllotmentService.getLotForHandicapped(this.parkingLots);
         }
-        if (vehicle.getDriverType().equals(DriverType.NORMAL)) {
+        else if (vehicle.getDriverType().equals(DriverType.NORMAL)) {
             parkingLotAlLot = LotAllotmentService.getLotForNormal(this.parkingLots);
         }
         parkingLotAlLot.parkVehicle(vehicle);
@@ -65,19 +65,19 @@ public class ParkingLotSystem {
 
     public Map<ParkingLot, List<Integer>> getLotAndSlotListOfVehiclesByColor(VehicleColour vehicleColour) {
         Map<ParkingLot, List<Integer>> vehiclesWithSpecificColor = new HashMap<>();
-        for (ParkingLot parkingLot : this.parkingLots) {
-            List<Integer> slotNumbers = parkingLot.getListOfSlotsByColour(vehicleColour);
-            if (slotNumbers.size() > 0) {
-                vehiclesWithSpecificColor.put(parkingLot, slotNumbers);
+
+        this.parkingLots.stream().forEach(p -> {
+            if (p.getListOfSlotsByColour(vehicleColour).size() > 0) {
+                vehiclesWithSpecificColor.put(p, p.getListOfSlotsByColour(vehicleColour));
             }
-        }
+        });
         return vehiclesWithSpecificColor;
     }
 
-    public Map<ParkingLot, List<Integer>> getLotAndSlotNumberByCompanyAndColor(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
-        Map<ParkingLot, List<Integer>> vehicleByCompanyAndColour = new HashMap<>();
+    public Map<ParkingLot, List<String>> getLotAndSlotNumberByCompanyAndColor(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
+        Map<ParkingLot, List<String>> vehicleByCompanyAndColour = new HashMap<>();
         for (ParkingLot parkingLot : this.parkingLots) {
-            List<Integer> slotNumbers = parkingLot.getSlotNumbersByCompanyAndColour(vehicleCompany, vehicleColour);
+            List<String> slotNumbers = parkingLot.getSlotNumbersByCompanyAndColour(vehicleCompany, vehicleColour);
             if (slotNumbers.size() > 0) {
                 vehicleByCompanyAndColour.put(parkingLot, slotNumbers);
             }
@@ -94,5 +94,16 @@ public class ParkingLotSystem {
             }
         }
         return vehicleByCompany;
+    }
+
+    public Map<ParkingLot, List<Integer>> getVehiclesParkedFromTime(int time) {
+        Map<ParkingLot, List<Integer>> slotNumbersByTime = new HashMap<>();
+        for (ParkingLot parkingLot : this.parkingLots) {
+            List<Integer> slotNumbers = parkingLot.getVehiclesParkedFromTime(30);
+            if (slotNumbers.size() > 0) {
+                slotNumbersByTime.put(parkingLot, slotNumbers);
+            }
+        }
+        return slotNumbersByTime;
     }
 }

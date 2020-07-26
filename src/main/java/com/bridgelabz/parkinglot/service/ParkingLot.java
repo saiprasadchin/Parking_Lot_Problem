@@ -116,6 +116,9 @@ public class ParkingLot {
         return slot.getParkingTime();
     }
 
+    public LocalDateTime getCurrentTime() {
+        return LocalDateTime.now();
+    }
     public void checkVehicleAlreadyPresent(ParkingVehicleDetails vehicle) throws ParkingLotException {
         if (isPresent(vehicle)) {
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Vehicle Already present");
@@ -132,12 +135,13 @@ public class ParkingLot {
         return slotNumbers;
     }
 
-    public List<Integer> getSlotNumbersByCompanyAndColour(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
-        List<Integer> slotNumbers = new ArrayList<>();
+    public List<String> getSlotNumbersByCompanyAndColour(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
+        List<String> slotNumbers = new ArrayList<>();
         for (Integer slotNumber : parkedVehicles.keySet()) {
             if (parkedVehicles.get(slotNumber).getVehicle().getVehicle().getVehicleColour().equals(vehicleColour) &&
                     parkedVehicles.get(slotNumber).getVehicle().getVehicle().getCompany().equals(vehicleCompany)) {
-                slotNumbers.add(slotNumber);
+                slotNumbers.add(parkedVehicles.get(slotNumber).getVehicle().getVehicle().getVehicleNumber()+
+                        " "+parkedVehicles.get(slotNumber).getVehicle().getAttendantName());
             }
         }
         return slotNumbers;
@@ -147,6 +151,16 @@ public class ParkingLot {
         List<Integer> slotNumbers = new ArrayList<>();
         for (Integer slotNumber : parkedVehicles.keySet()) {
             if (parkedVehicles.get(slotNumber).getVehicle().getVehicle().getCompany().equals(vehicleCompany)) {
+                slotNumbers.add(slotNumber);
+            }
+        }
+        return slotNumbers;
+    }
+
+    public List<Integer> getVehiclesParkedFromTime(int time) {
+        List<Integer> slotNumbers = new ArrayList<>();
+        for (Integer slotNumber : parkedVehicles.keySet()) {
+            if ((parkedVehicles.get(slotNumber).getParkingTime().getMinute() - getCurrentTime().getMinute()) <= time) {
                 slotNumbers.add(slotNumber);
             }
         }
