@@ -7,7 +7,7 @@ import com.bridgelabz.parkinglot.enums.VehicleSize;
 import com.bridgelabz.parkinglot.exception.ParkingLotException;
 import com.bridgelabz.parkinglot.observer.IObserver;
 import com.bridgelabz.parkinglot.model.ParkingVehicleDetails;
-import com.bridgelabz.parkinglot.model.Slot;
+import com.bridgelabz.parkinglot.model.parkingSlot;
 import com.bridgelabz.parkinglot.utility.SlotAllotment;
 
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ public class ParkingLot {
 
     public int parkingCapacity;
     public SlotAllotment slotAllotment;
-    public HashMap<Integer, Slot> parkedVehicles;
+    public HashMap<Integer, parkingSlot> parkedVehicles;
     public List<IObserver> observers;
 
     public ParkingLot(int parkingLotCapacity) {
@@ -59,7 +59,7 @@ public class ParkingLot {
         if (isPresent(vehicle))
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Already present");
         Integer slot = slotAllotment.getNearestParkingSlot();
-        parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0),slot));
+        parkedVehicles.put(slot, new parkingSlot(vehicle, getCurrentTime(), slot));
         if (this.parkingCapacity == this.parkedVehicles.size()) {
             informListeners("Capacity is Full");
         }
@@ -78,7 +78,7 @@ public class ParkingLot {
 
     public Integer getSlot(ParkingVehicleDetails vehicle) {
         Integer slot = -1;
-        for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
+        for (Map.Entry<Integer, parkingSlot> entry : parkedVehicles.entrySet()) {
             if (vehicle.equals(entry.getValue().getVehicle())) {
                 slot = entry.getKey();
                 slotAllotment.unParkUpdate(slot);
@@ -89,7 +89,7 @@ public class ParkingLot {
 
     public Integer findVehicle(ParkingVehicleDetails vehicle) throws ParkingLotException {
         Integer slot = -1;
-        for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
+        for (Map.Entry<Integer, parkingSlot> entry : parkedVehicles.entrySet()) {
             if (vehicle.equals(entry.getValue().getVehicle())) {
                 slot = entry.getKey();
                 this.unParkVehicle(vehicle);
@@ -100,7 +100,7 @@ public class ParkingLot {
 
     public Integer getPositionOfVehicle(ParkingVehicleDetails vehicle) {
         Integer slot = -1;
-        for (Map.Entry<Integer, Slot> entry : parkedVehicles.entrySet()) {
+        for (Map.Entry<Integer, parkingSlot> entry : parkedVehicles.entrySet()) {
             if (vehicle.equals(entry.getValue().getVehicle())) {
                 slot = entry.getKey();
             }
@@ -111,17 +111,17 @@ public class ParkingLot {
     public void parkVehicle(int slot, ParkingVehicleDetails vehicle) throws ParkingLotException {
         if (isPresent(vehicle))
             throw new ParkingLotException(ParkingLotException.ExceptionType.VEHICLE_ALREADY_PRESENT, "Vehicle Already present");
-        this.parkedVehicles.put(slot, new Slot(vehicle, LocalDateTime.now().withNano(0), slot));
+        this.parkedVehicles.put(slot, new parkingSlot(vehicle, LocalDateTime.now().withNano(0), slot));
         slotAllotment.parkUpdate(slot);
     }
 
     public LocalDateTime getParkingTime(ParkingVehicleDetails vehicle) {
-        Slot slot = parkedVehicles.get(getPositionOfVehicle(vehicle));
+        parkingSlot slot = parkedVehicles.get(getPositionOfVehicle(vehicle));
         return slot.getParkingTime();
     }
 
     public LocalDateTime getCurrentTime() {
-        return LocalDateTime.now();
+        return LocalDateTime.now().withNano(0);
     }
 
     public void checkVehicleAlreadyPresent(ParkingVehicleDetails vehicle) throws ParkingLotException {
@@ -140,7 +140,7 @@ public class ParkingLot {
         return slotNumbers;
     }
 
-    public List<String> getSlotNumbersByCompanyAndColour(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
+    public List<String> getDetailsByCompanyAndColour(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
         List<String> slotNumbers = new ArrayList<>();
         for (Integer slotNumber : parkedVehicles.keySet()) {
             if (parkedVehicles.get(slotNumber).getVehicle().getVehicle().getVehicleColour().equals(vehicleColour) &&
@@ -172,18 +172,6 @@ public class ParkingLot {
         return slotNumbers;
     }
 
-    public List<Integer> getSlotNumbersBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
-        List<Integer> slotNumbers = new ArrayList<>();
-        for (Integer slotNumber : parkedVehicles.keySet()) {
-            if (parkedVehicles.get(slotNumber).getVehicle().getVehicleSize() == vehicleSize &&
-                    parkedVehicles.get(slotNumber).getVehicle().getDriverType() == driverType) {
-                slotNumbers.add(slotNumber);
-            }
-        }
-        return slotNumbers;
-
-    }
-
     public List<Integer> getAllVehiclesParkedInParkingLot() {
         List<Integer> slotNumbers = new ArrayList<>();
         for (Integer slotNumber : parkedVehicles.keySet()) {
@@ -192,13 +180,13 @@ public class ParkingLot {
         return slotNumbers;
     }
 
-    public List<String> getCompleteVehiclesList(DriverType driverType, VehicleSize vehicleSize) {
+    public List<String> getDetailsBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
         List<String> parkingLotList = this.parkedVehicles.values()
                 .stream()
-                .filter(parkingSlot -> parkingSlot.getVehicle().getDriverType() == driverType )
-                .filter(parkingSlot -> parkingSlot.getVehicle().getVehicleSize() == vehicleSize )
-                .map(parkingSlot -> ((parkingSlot.getSlotNumber() +" "
-                        +parkingSlot.getVehicle().getVehicle().getCompany()) + " "
+                .filter(parkingSlot -> parkingSlot.getVehicle().getDriverType() == driverType)
+                .filter(parkingSlot -> parkingSlot.getVehicle().getVehicleSize() == vehicleSize)
+                .map(parkingSlot -> ((parkingSlot.getSlotNumber() + " "
+                        + parkingSlot.getVehicle().getVehicle().getCompany()) + " "
                         + (parkingSlot.getVehicle().getVehicle().getVehicleColour()) + " "
                         + (parkingSlot.getVehicle().getVehicleSize()) + " "
                         + (parkingSlot.getVehicle().getAttendantName())))

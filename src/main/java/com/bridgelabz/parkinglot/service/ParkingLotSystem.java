@@ -33,11 +33,11 @@ public class ParkingLotSystem {
             parkingLot.checkVehicleAlreadyPresent(vehicle);
         }
         if (vehicle.getVehicleSize().equals(VehicleSize.LARGE)) {
-            parkingLotAlLot = LotAllotmentService.getLotForLarge(this.parkingLots);
+            parkingLotAlLot = LotAllotment.getLotForLarge(this.parkingLots);
         } else if (vehicle.getDriverType().equals(DriverType.HANDICAPPED)) {
-            parkingLotAlLot = LotAllotmentService.getLotForHandicapped(this.parkingLots);
+            parkingLotAlLot = LotAllotment.getLotForHandicapped(this.parkingLots);
         } else if (vehicle.getDriverType().equals(DriverType.NORMAL)) {
-            parkingLotAlLot = LotAllotmentService.getLotForNormal(this.parkingLots);
+            parkingLotAlLot = LotAllotment.getLotForNormal(this.parkingLots);
         }
         parkingLotAlLot.parkVehicle(vehicle);
     }
@@ -72,10 +72,10 @@ public class ParkingLotSystem {
         return vehiclesWithSpecificColor;
     }
 
-    public Map<ParkingLot, List<String>> getLotAndSlotNumberByCompanyAndColor(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
+    public Map<ParkingLot, List<String>> getDetailsByCompanyAndColour(VehicleCompany vehicleCompany, VehicleColour vehicleColour) {
         Map<ParkingLot, List<String>> vehicleByCompanyAndColour = new HashMap<>();
         for (ParkingLot parkingLot : this.parkingLots) {
-            List<String> slotNumbers = parkingLot.getSlotNumbersByCompanyAndColour(vehicleCompany, vehicleColour);
+            List<String> slotNumbers = parkingLot.getDetailsByCompanyAndColour(vehicleCompany, vehicleColour);
             if (slotNumbers.size() > 0) {
                 vehicleByCompanyAndColour.put(parkingLot, slotNumbers);
             }
@@ -105,10 +105,10 @@ public class ParkingLotSystem {
         return slotNumbersByTime;
     }
 
-    public Map<ParkingLot, List<String>> getSlotNumbersBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
+    public Map<ParkingLot, List<String>> getDetailsBySizeAndDriverType(DriverType driverType, VehicleSize vehicleSize) {
         Map<ParkingLot, List<String>> lotAndSlotNumbers = new HashMap<>();
         for (ParkingLot parkingLot : this.parkingLots) {
-            List<String> slotNumbers = parkingLot.getCompleteVehiclesList(driverType,vehicleSize);
+            List<String> slotNumbers = parkingLot.getDetailsBySizeAndDriverType(driverType,vehicleSize);
             if (slotNumbers.size() > 0) {
                 lotAndSlotNumbers.put(parkingLot, slotNumbers);
             }

@@ -5,7 +5,7 @@ import com.bridgelabz.parkinglot.exception.ParkingLotException;
 import java.util.Comparator;
 import java.util.List;
 
-public class LotAllotmentService {
+public class LotAllotment {
 
     public static ParkingLot getLotForNormal(List<ParkingLot> parkingLots) {
         parkingLots.sort(Comparator.comparing(ParkingLot::getCountOfVehicles));

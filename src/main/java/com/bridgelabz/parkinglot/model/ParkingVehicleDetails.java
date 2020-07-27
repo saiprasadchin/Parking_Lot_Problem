@@ -47,9 +47,4 @@ public class ParkingVehicleDetails {
                 driverType == that.driverType &&
                 Objects.equals(attendantName, that.attendantName);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(vehicle, vehicleSize, driverType, attendantName);
-    }
 }

@@ -38,9 +38,4 @@ public class Vehicle {
                 company == vehicle.company &&
                 vehicleColour == vehicle.vehicleColour;
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(vehicleNumber, company, vehicleColour);
-    }
 }

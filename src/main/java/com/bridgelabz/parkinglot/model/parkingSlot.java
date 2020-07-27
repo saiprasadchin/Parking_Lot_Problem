@@ -3,12 +3,12 @@ package com.bridgelabz.parkinglot.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Slot {
+public class parkingSlot {
     private ParkingVehicleDetails vehicle;
     private LocalDateTime parkingTime;
     Integer slotNumber ;
 
-    public Slot(ParkingVehicleDetails vehicle, LocalDateTime parkingTime, Integer slotNumber) {
+    public parkingSlot(ParkingVehicleDetails vehicle, LocalDateTime parkingTime, Integer slotNumber) {
         this.vehicle = vehicle;
         this.parkingTime = parkingTime;
         this.slotNumber = slotNumber;
@@ -30,12 +30,9 @@ public class Slot {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Slot that = (Slot) o;
-        return Objects.equals(vehicle, that.vehicle);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(vehicle);
+        parkingSlot slot = (parkingSlot) o;
+        return Objects.equals(vehicle, slot.vehicle) &&
+                Objects.equals(parkingTime, slot.parkingTime) &&
+                Objects.equals(slotNumber, slot.slotNumber);
     }
 }
